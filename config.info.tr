@@ -1,0 +1,3 @@
+svnadmin=Full path to svnadmin command,0
+auth=Authentication type,1,Basic-Basic,Digest-Digest
+auto=Add Autoversioning directive?,1,1-Yes,0-No

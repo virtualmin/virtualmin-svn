@@ -1,0 +1,63 @@
+feat_name=AltVersiyon havuzlar&#305;
+feat_losing=Web sitesi üzerinden AltVersiyon eri&#351;imi engellenecek
+feat_disname=altversiyon havuzlar&#305;
+feat_label=AltVersiyon havuzlar&#305;na izin verilsin mi?
+feat_edepweb=Bir web sitesi etkinle&#351;tirilmeden AltVersiyon etkinle&#351;tirilemez
+feat_echeck=AltVersiyon yönetim komutu $1 kurulmam&#305;&#351;
+feat_backup=AltVersiyon havuz ve konfigürasyon dosyalar&#305; yedekleniyor ..
+feat_tar=.. havuzlar&#305;n TAR up i&#351;lemi yap&#305;lamad&#305; : $1
+feat_nopfile=.. kullan&#305;c&#305; dosyas&#305; bulunamad&#305;!
+feat_nocfile=.. konfigürasyon dosyas&#305; bulunamad&#305;!
+feat_backup_name=AltVersiyon havuz ve konfigürasyon dosyalar&#305;
+feat_untar=.. havuzlar un-TAR edilemedi : $1
+feat_copypfile=.. kullan&#305;c&#305; dosyas&#305; kopyalanmad&#305;
+feat_copycfile=.. Konfigürasyon dosyas&#305; kopyalanamad&#305;
+feat_restore=AltVersiyon havuz ve konfigürasyon dosyalar&#305; geri yükleniyor ..
+feat_evalidatefile=SVN kullan&#305;c&#305; dosyas&#305; $1 mevcut de&#287;il
+feat_evalidateconf=SVN konfigürasyon dosyas&#305; $1 mevcut de&#287;il
+feat_evalidateloc=Apache konfigürasyonundaki SVN yeri eksik
+
+setup_dav=Web sitesi konfigürasyonuna AltVersiyon direktifleri ekleniyor ..
+
+save_dav=Web sitesi konfigürasyonundaki alanad&#305; güncelleniyor ..
+
+delete_dav=Web sitesi konfigürasyonundan AltVersiyon direketifleri kald&#305;r&#305;l&#305;yor ..
+
+index_title=AltVersiyon Havuzlar&#305;
+index_none=Sunucuular&#305;n&#305;zda hiçbir AltVersiyon henüz tan&#305;mlanmam&#305;&#351;.
+index_rep=Havuz ismi
+index_dom=Alt&#305;nda oldu&#287;u sunucu
+index_dir=Klasör
+index_action=&#304;&#351;lem
+index_header=AltVersiyon Havuzu Olu&#351;tur
+index_edoms=Vitualmin sunucular&#305;na eri&#351;im hakk&#305;n&#305;z yok.
+index_edoms2=Henüz hiçbir Virtualmin sunucusu olu&#351;turulmam&#305;&#351;.
+index_edoms3=Eri&#351;im hakk&#305;n&#305;z olan hiçbir Virtualmin sunucusunda AltVersiyon özelli&#287;i etkinle&#351;tirilmemi&#351;.
+index_eplugin=Virtualmin'in <a href='$1'>pluginler sayfas&#305;nda</a> AltVersiyon plugini etkinle&#351;tirilmemi&#351;. Bu modülü kullanabilmeniz içn önceden seçilmesi laz&#305;m.
+index_eplugin2=Virtualmin'de AltVersiyon plugini etkinle&#351;tirilmemi&#351;.
+index_type=Havuz tipi
+index_ro=Anonim okuma eri&#351;imine izin verilsin mi?
+index_max=Bundan daha fazla SVN havuzu ekleme izniniz yok.
+index_canadd0=Limitlerinize göre $1 adek ek havuz eklenebilir.
+
+add_err=Havuz olu&#351;turulamad&#305;
+add_erep=Eksik veya geçersiz havuz ismi
+add_edom=Bu alanad&#305;na eri&#351;im hakk&#305;n&#305;z yok
+
+mail_svn=AltVersiyon logini etkinle&#351;tirilsin mi?
+mail_reps=Havuzlara eri&#351;ime izin ver
+mail_header=SVN?
+mail_clash=Ayn&#305; isimle bir AltVersiyon kullan&#305;c&#305;s&#305; zaten mevcut
+mail_pass=Bir kullan&#305;c&#305; için SVN etkinle&#351;tirilirken bir &#351;ifre girilmeli
+
+delete_erep=Havuz mevcut de&#287;il
+
+links_link=SVN Havuzlar&#305;n&#305; Düzenle
+
+limits_max=Maksimum SVN havuzu say&#305;s&#305;
+limits_emax=Eksik veya geçersiz maksimum SVN havuzu say&#305;s&#305;
+
+tmpl_limit=Varsay&#305;lan SVN havuz say&#305;s&#305; limiti
+tmpl_unlimit=S&#305;n&#305;rs&#305;z
+tmpl_atmost=En fazla
+tmpl_elimit=Eksik veya geçersiz SVN havuz say&#305;s&#305; limiti
