@@ -53,7 +53,7 @@ mail_pass=A password must be entered when enabling SVN for a user
 
 delete_erep=Repository does not exist
 
-links_link=Manage SVN Repositories
+links_link=SVN Repositories
 
 limits_max=Maximum number of SVN repositories
 limits_emax=Missing or invalid maximum number of SVN repositories
