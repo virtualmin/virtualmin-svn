@@ -29,7 +29,7 @@ index_none=No SubVersion repositories have been defined in any of your servers y
 index_rep=Repository name
 index_dom=Under server
 index_dir=Directory
-index_action=Action
+index_action=Actions
 index_header=Create SubVersion Repository
 index_edoms=You do not have access to any Virtualmin servers.
 index_edoms2=No Virtualmin servers have been created yet.
@@ -40,6 +40,8 @@ index_type=Repository type
 index_ro=Allow anonymous read access?
 index_max=You are not allowed to add any more SVN repositories.
 index_canadd0=Based on your limits, $1 additional repositories can be added.
+index_email=Configure Email
+index_return=repositories list
 
 add_err=Failed to create repository
 add_erep=Missing or invalid repository name
@@ -52,6 +54,10 @@ mail_clash=A SubVersion user with the same name already exists
 mail_pass=A password must be entered when enabling SVN for a user
 
 delete_erep=Repository does not exist
+delete_emode=No button clicked!
+delete_title=Delete Repository
+delete_rusure=Are you sure you want to delete the SubVersion repository $1? $2 of source code and other files will be deleted.
+delete_ok=Yes, Delete It
 
 links_link=SVN Repositories
 
@@ -62,3 +68,10 @@ tmpl_limit=Default limit on number of SVN repositories
 tmpl_unlimit=Unlimited
 tmpl_atmost=At most
 tmpl_elimit=Missing or invalid limit on number of SVN repositories
+
+email_title=Email Settings
+email_header=Repository email notification settings
+email_rep=Repository name
+email_email=Send email after commits?
+email_none=Don't send
+email_send=Send to

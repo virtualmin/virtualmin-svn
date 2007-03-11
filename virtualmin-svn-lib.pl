@@ -183,7 +183,65 @@ else {
 return @$users;
 }
 
+# get_repository_email(&domain, &rep)
+# Returns the email address to notify when changes to some repo are committed
+sub get_repository_email
+{
+local ($dom, $rep) = @_;
+local $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
+local $lref = &read_file_lines($pc);
+local ($prog, $email);
+foreach my $l (@$lref) {
+	if ($l =~ /^\s*EMAIL="(.*)"/) {
+		$email = $1;
+		}
+	elsif ($l =~ /^\S+\/commit-email.pl.*\$EMAIL/ &&
+	       $l !~ /^\#/) {
+		$prog = 1;
+		}
+	}
+return $prog && $email ? $email : undef;
+}
 
+# save_repository_email(&domain, &rep, email)
+# Updates the email address to notify when changes to some repo are committed
+sub save_repository_email
+{
+local ($dom, $rep, $email) = @_;
+local $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
+local $lref = &read_file_lines($pc);
+if (!@$lref && $email) {
+	# Create initial file
+	push(@$lref, "#!/bin/sh",
+		     "EMAIL=\"$email\"",
+		     "REPOS=\"\$1\"",
+		     "REV=\"\$2\"",
+		     "$module_root_directory/commit-email.pl --from $dom->{'emailto'} -s \"SubVersion commit\" \"\$REPOS\" \"\$REV\" \"\$EMAIL\"");
+	&flush_file_lines($pc);
+	&set_ownership_permissions($d->{'uid'}, $d->{'gid'}, 0755, $pc);
+	}
+elsif (@$lref && $email) {
+	# Just update email, and comment in program
+	foreach my $l (@$lref) {
+		if ($l =~ /^\s*EMAIL="(.*)"/) {
+			$l = "EMAIL=\"$email\"";
+			}
+		elsif ($l =~ /^#\S+\/commit-email.pl/) {
+			$l =~ s/^#//;
+			}
+		}
+	&flush_file_lines($pc);
+	}
+elsif (@$lref && !$email) {
+	# Comment out the program
+	foreach my $l (@$lref) {
+		if ($l =~ /^\S+\/commit-email.pl.*\$EMAIL/ && $l !~ /^\#/) {
+			$l = "#$l";
+			}
+		}
+	&flush_file_lines($pc);
+	}
+}
 
 1;
 

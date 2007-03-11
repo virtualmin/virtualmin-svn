@@ -51,10 +51,16 @@ if (@reps) {
 				  $text{'index_action'} ]);
 	foreach $r (@reps) {
 		$dom = $r->{'dom'}->{'dom'};
+		@actions = (
+			&ui_submit($text{'delete'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
+			&ui_submit($text{'index_email'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
+			);
 		print &ui_columns_row([ $r->{'rep'},
 					$dom,
 					$r->{'dir'},
-					&ui_submit($text{'delete'}, $r->{'rep'}."\@".$r->{'dom'}->{'id'}) ]);
+					join(" ", @actions) ]);
 		}
 	print &ui_columns_end();
 	print &ui_form_end();
