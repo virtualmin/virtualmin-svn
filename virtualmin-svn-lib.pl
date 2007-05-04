@@ -122,7 +122,8 @@ else {
 			}
 		}
 	}
-&system_logged("chown -R $webuser: $qdir");
+local @uinfo = getpwnam($webuser);
+&system_logged("chown -R $uinfo[2]:$uinfo[3] $qdir");
 &system_logged("chmod -R 770 $qdir");
 
 local $lref = &read_file_lines(&conf_file($dom));
