@@ -2,3 +2,4 @@ svnadmin=Full path to svnadmin command,0
 auth=Authentication type,1,Basic-Basic,Digest-Digest
 passfile=Password file under home directory,3,Default (<tt>etc/svn.basic.passwd</tt>)
 auto=Add Autoversioning directive?,1,1-Yes,0-No
+canfs=Allow selection of repository filesystem type?,1,1-Yes,0-No

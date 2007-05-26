@@ -123,8 +123,8 @@ else {
 		}
 	}
 local @uinfo = getpwnam($webuser);
-&system_logged("chown -R $uinfo[2]:$uinfo[3] $qdir");
-&system_logged("chmod -R 770 $qdir");
+&system_logged("chown -R $uinfo[2]:$dom->{'gid'} $qdir");
+&system_logged("chmod -R 2770 $qdir");
 
 local $lref = &read_file_lines(&conf_file($dom));
 local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
@@ -151,7 +151,7 @@ if (defined($start)) {
 sub supports_fs_type
 {
 local $out = &backquote_command("$config{'svnadmin'} help create 2>&1", 1);
-return $out =~ /\-\-fs\-type/;
+return $config{'canfs'} && $out =~ /\-\-fs\-type/;
 }
 
 # passwd_file(&domain)

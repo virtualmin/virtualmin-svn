@@ -1,3 +1,4 @@
 svnadmin=svnadmin
 auth=Basic
 auto=0
+canfs=1
