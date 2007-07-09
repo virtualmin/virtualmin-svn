@@ -573,7 +573,7 @@ return $rv;
 # mailbox_modify(&user, &old, &domain)
 sub mailbox_modify
 {
-local ($user, $old, $dom) = @_;
+local ($user, $olduser, $dom) = @_;
 return undef if (!$dom || !$dom->{$module_name});
 &foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
 local @users = &list_users($dom);
