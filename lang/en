@@ -1,41 +1,41 @@
-feat_name=SubVersion repositories
-feat_losing=SubVersion access via the website will be disabled
+feat_name=Subversion repositories
+feat_losing=Subversion access via the website will be disabled
 feat_disname=subversion repositories
-feat_label=Allow SubVersion repositories?
-feat_edepweb=SubVersion cannot be enabled unless a website is
-feat_echeck=The SubVersion administration command $1 is not installed
+feat_label=Allow Subversion repositories?
+feat_edepweb=Subversion cannot be enabled unless a website is
+feat_echeck=The Subversion administration command $1 is not installed
 feat_edigest=Digest authentication is enabled, but the $1 command is not installed.
-feat_backup=Backing up SubVersion repositories and configuration files ..
+feat_backup=Backing up Subversion repositories and configuration files ..
 feat_tar=.. failed to TAR up repositories : $1
 feat_nopfile=.. users file not found!
 feat_nocfile=.. configuration file not found!
-feat_backup_name=SubVersion repositories and configuration files
+feat_backup_name=Subversion repositories and configuration files
 feat_untar=.. failed to un-TAR repositories : $1
 feat_copypfile=.. failed to copy users file
 feat_copycfile=.. failed to copy config file
-feat_restore=Restoring SubVersion repositories and configuration files ..
+feat_restore=Restoring Subversion repositories and configuration files ..
 feat_evalidatefile=SVN users file $1 does not exist
 feat_evalidateconf=SVN configuration file $1 does not exist
 feat_evalidateloc=Missing SVN Location from Apache configuration
 
-setup_dav=Adding SubVersion directives to website configuration ..
+setup_dav=Adding Subversion directives to website configuration ..
 
 save_dav=Updating domain in website configuration ..
 
-delete_dav=Removing SubVersion directives from website configuration ..
+delete_dav=Removing Subversion directives from website configuration ..
 
-index_title=SubVersion Repositories
-index_none=No SubVersion repositories have been defined in any of your servers yet.
+index_title=Subversion Repositories
+index_none=No Subversion repositories have been defined in any of your servers yet.
 index_rep=Repository name
 index_dom=Under server
 index_dir=Directory
 index_action=Actions
-index_header=Create SubVersion Repository
+index_header=Create Subversion Repository
 index_edoms=You do not have access to any Virtualmin servers.
 index_edoms2=No Virtualmin servers have been created yet.
-index_edoms3=No Virtualmin servers that you have access to have the SubVersion feature enabled.
-index_eplugin=The SubVersion plugin is not enabled on Virtualmin's <a href='$1'>plugins page</a>. It must be selected before you can use this module.
-index_eplugin2=The SubVersion plugin is not enabled in Virtualmin.
+index_edoms3=No Virtualmin servers that you have access to have the Subversion feature enabled.
+index_eplugin=The Subversion plugin is not enabled on Virtualmin's <a href='$1'>plugins page</a>. It must be selected before you can use this module.
+index_eplugin2=The Subversion plugin is not enabled in Virtualmin.
 index_type=Repository type
 index_ro=Allow anonymous read access?
 index_max=You are not allowed to add any more SVN repositories.
@@ -47,16 +47,16 @@ add_err=Failed to create repository
 add_erep=Missing or invalid repository name
 add_edom=You do not have acces to that domain
 
-mail_svn=SubVersion login enabled?
+mail_svn=Subversion login enabled?
 mail_reps=Allow access to repositories
 mail_header=SVN?
-mail_clash=A SubVersion user with the same name already exists
+mail_clash=A Subversion user with the same name already exists
 mail_pass=A password must be entered when enabling SVN for a user
 
 delete_erep=Repository does not exist
 delete_emode=No button clicked!
 delete_title=Delete Repository
-delete_rusure=Are you sure you want to delete the SubVersion repository $1? $2 of source code and other files will be deleted.
+delete_rusure=Are you sure you want to delete the Subversion repository $1? $2 of source code and other files will be deleted.
 delete_ok=Yes, Delete It
 
 links_link=SVN Repositories

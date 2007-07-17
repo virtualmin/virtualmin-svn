@@ -1,4 +1,4 @@
-desc=Virtualmin SubVersion Repositories
+desc=Virtualmin Subversion Repositories
 category=servers
 depends=virtual-server/2.27 1.221 htaccess-htpasswd
 version=3.1
