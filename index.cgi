@@ -56,6 +56,8 @@ if (@reps) {
 				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
 			&ui_submit($text{'index_email'},
 				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
+			&ui_submit($text{'index_perms'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
 			);
 		print &ui_columns_row([ $r->{'rep'},
 					$dom,

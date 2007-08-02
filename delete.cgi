@@ -4,16 +4,17 @@
 require './virtualmin-svn-lib.pl';
 &ReadParse();
 
+# Get the domain and repository
 ($repdom) = grep { $_ ne "confirm" } (keys %in);
 ($repname, $id) = split(/\@/, $repdom);
+$dom = &virtual_server::get_domain($id);
+&can_edit_domain($dom) || &error($text{'add_edom'});
+@reps = &list_reps($dom);
+($rep) = grep { $_->{'rep'} eq $repname } @reps;
+$rep || &error($text{'delete_erep'});
+
 if ($in{$repdom} eq $text{'delete'}) {
 	# Deleting repositories
-	$dom = &virtual_server::get_domain($id);
-	&can_edit_domain($dom) || &error($text{'add_edom'});
-
-	@reps = &list_reps($dom);
-	($rep) = grep { $_->{'rep'} eq $repname } @reps;
-	$rep || &error($text{'delete_erep'});
 	if ($in{'confirm'}) {
 		# Do it!
 		&delete_rep($dom, $rep);
@@ -39,6 +40,17 @@ if ($in{$repdom} eq $text{'delete'}) {
 elsif ($in{$repdom} eq $text{'index_email'}) {
 	# Configuring email
 	&redirect("edit_email.cgi?dom=$id&rep=$repname");
+	}
+elsif ($in{$repdom} eq $text{'index_perms'}) {
+	# Set permissions back to Apache user
+	&ui_print_header(&virtual_server::domain_in($dom),
+			 $text{'perms_title'}, "");
+	
+	print &text('perms_doing', "<tt>$rep->{'dir'}</tt>"),"<br>\n";
+	&set_rep_permissions($dom, $rep);
+	print $text{'perms_done'},"<p>\n";
+
+	&ui_print_footer("", $text{'index_return'});
 	}
 else {
 	&error($text{'delete_emode'});

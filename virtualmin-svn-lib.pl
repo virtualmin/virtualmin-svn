@@ -110,6 +110,22 @@ else {
 if ($?) {
 	return $out;
 	}
+&set_rep_permissions($dom, $rep);
+
+local $lref = &read_file_lines(&conf_file($dom));
+local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
+if (!defined($start)) {
+	push(@$lref, "[$rep->{'rep'}:/]");
+	&flush_file_lines();
+	}
+}
+
+# set_rep_permissions(&domain, &rep)
+# Sets the ownership and permissions on a repository
+sub set_rep_permissions
+{
+local ($dom, $rep) = @_;
+local $qdir = quotemeta($rep->{'dir'});
 local $webuser;
 if (defined(&virtual_server::get_apache_user)) {
 	$webuser = &virtual_server::get_apache_user($dom);
@@ -125,13 +141,6 @@ else {
 local @uinfo = getpwnam($webuser);
 &system_logged("chown -R $uinfo[2]:$dom->{'gid'} $qdir");
 &system_logged("chmod -R 2770 $qdir");
-
-local $lref = &read_file_lines(&conf_file($dom));
-local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
-if (!defined($start)) {
-	push(@$lref, "[$rep->{'rep'}:/]");
-	&flush_file_lines();
-	}
 }
 
 # delete_rep(&domain, &rep)
