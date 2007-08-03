@@ -4,7 +4,7 @@
 require './virtualmin-svn-lib.pl';
 &ReadParse();
 &error_setup($text{'email_err'});
-$config{'canemail'} || &error($text{'email_ecannot'});
+$config{'cannotify'} || &error($text{'email_ecannot'});
 
 # Get the domain and repository
 $dom = &virtual_server::get_domain($in{'dom'});
