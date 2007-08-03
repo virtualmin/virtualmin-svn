@@ -253,5 +253,33 @@ elsif (@$lref && !$email) {
 	}
 }
 
+# dump_rep(&domain, &rep, file)
+# Dumps the contents of a repository to a file
+sub dump_rep
+{
+local ($dom, $rep, $file) = @_;
+local $cmd = "svnadmin dump -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
+	     " 2>&1 >".quotemeta($file);
+local $out = &virtual_server::run_as_domain_user($dom, $cmd);
+return $? ? "<pre>".&html_escape($out)."</pre>" : undef;
+}
+
+# load_rep(&domain, &rep, file)
+# Loads the contents of a repository from a file
+sub load_rep
+{
+local ($dom, $rep, $file) = @_;
+local $cmd = "svnadmin load -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
+	     " 2>&1 <".quotemeta($file);
+local $out = &virtual_server::run_as_domain_user($dom, $cmd);
+if ($?) {
+	return "<pre>".&html_escape($out)."</pre>";
+	}
+else {
+	&set_rep_permissions($dom, $rep);
+	return undef;
+	}
+}
+
 1;
 

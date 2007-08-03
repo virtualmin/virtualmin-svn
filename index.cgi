@@ -58,6 +58,10 @@ if (@reps) {
 				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
 			&ui_submit($text{'index_perms'},
 				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
+			&ui_submit($text{'index_dump'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
+			&ui_submit($text{'index_load'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
 			);
 		print &ui_columns_row([ $r->{'rep'},
 					$dom,
@@ -78,7 +82,7 @@ if ($access{'max'} && @reps >= $access{'max'}) {
 else {
 	# Show form to add a repository
 	print &ui_form_start("add.cgi");
-	print &ui_table_start($text{'index_header'}, undef, 2);
+	print &ui_table_start($text{'index_header'}, undef, 2, [ "width=30%" ]);
 	print &ui_table_row($text{'index_rep'},
 			    &ui_textbox("rep", undef, 20), 1);
 	print &ui_table_row($text{'index_dom'},

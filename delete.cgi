@@ -41,6 +41,14 @@ elsif ($in{$repdom} eq $text{'index_email'}) {
 	# Configuring email
 	&redirect("edit_email.cgi?dom=$id&rep=$repname");
 	}
+elsif ($in{$repdom} eq $text{'index_dump'}) {
+	# Dumping repository
+	&redirect("edit_dump.cgi?dom=$id&rep=$repname");
+	}
+elsif ($in{$repdom} eq $text{'index_load'}) {
+	# Loading repository
+	&redirect("edit_load.cgi?dom=$id&rep=$repname");
+	}
 elsif ($in{$repdom} eq $text{'index_perms'}) {
 	# Set permissions back to Apache user
 	&ui_print_header(&virtual_server::domain_in($dom),
