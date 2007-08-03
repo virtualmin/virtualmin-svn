@@ -222,13 +222,17 @@ local $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
 local $lref = &read_file_lines($pc);
 if (!@$lref && $email) {
 	# Create initial file
+	local $svnlook = &has_command("svnlook");
+	$svnlook || &error("Could not find the svnlook command");
 	push(@$lref, "#!/bin/sh",
 		     "EMAIL=\"$email\"",
 		     "REPOS=\"\$1\"",
 		     "REV=\"\$2\"",
+		     "SVNLOOK=\"\$svnlook\"",
+		     "export SVNLOOK",
 		     "$module_root_directory/commit-email.pl --from $dom->{'emailto'} -s \"SubVersion commit\" \"\$REPOS\" \"\$REV\" \"\$EMAIL\"");
 	&flush_file_lines($pc);
-	&set_ownership_permissions($d->{'uid'}, $d->{'gid'}, 0755, $pc);
+	&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'}, 0755, $pc);
 	}
 elsif (@$lref && $email) {
 	# Just update email, and comment in program

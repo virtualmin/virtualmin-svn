@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/local/bin/perl
 
 # ====================================================================
 # commit-email.pl: send a notification email describing either a
@@ -53,7 +53,7 @@ my ($sendmail, $smtp_server);
 $smtp_server = "127.0.0.1";
 
 # Svnlook path.
-my $svnlook = "/usr/bin/svnlook";
+my $svnlook = $ENV{'SVNLOOK'} || "/usr/bin/svnlook";
 
 # By default, when a file is deleted from the repository, svnlook diff
 # prints the entire contents of the file.  If you want to save space

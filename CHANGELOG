@@ -1,0 +1,11 @@
+---- Changes since 2.71 ----
+Added the Configure Email button for setting up automatic email notification when a commit is made to a repository.
+When deleting a repository, the user is prompted to confirm it before all the files are removed.
+---- Changes since 2.8 ----
+Fixed Solaris-specific chown bug.
+---- Changes since 3.0 ----
+Set ownership of new svn repositories to 2775 (inherit group owner).
+Added Module Config option to disallow selection of FS type.
+---- Changes since 3.1 ----
+Added a button for fixing permissions and ownership on SVN repositories.
+Added buttons for dumping and loading SVN repositories.
