@@ -4,6 +4,7 @@
 require './virtualmin-svn-lib.pl';
 &ReadParseMime();
 &error_setup($text{'load_err'});
+$config{'canload'} || &error($text{'load_ecannot'});
 
 # Get the domain and repository
 $dom = &virtual_server::get_domain($in{'dom'});

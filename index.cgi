@@ -54,15 +54,21 @@ if (@reps) {
 		@actions = (
 			&ui_submit($text{'delete'},
 				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
-			&ui_submit($text{'index_email'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
-			&ui_submit($text{'index_perms'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
-			&ui_submit($text{'index_dump'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
-			&ui_submit($text{'index_load'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
 			);
+		if ($config{'cannotify'}) {
+			push(@actions, &ui_submit($text{'index_email'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
+			}
+		push(@actions, &ui_submit($text{'index_perms'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
+		if ($config{'candump'}) {
+			push(@actions, &ui_submit($text{'index_dump'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
+			}
+		if ($config{'canload'}) {
+			push(@actions, &ui_submit($text{'index_load'},
+				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
+			}
 		print &ui_columns_row([ $r->{'rep'},
 					$dom,
 					$r->{'dir'},

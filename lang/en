@@ -78,6 +78,7 @@ email_rep=Repository name
 email_email=Send email after commits?
 email_none=Don't send
 email_send=Send to
+email_ecannot=You are not allowed to configure email settings
 
 perms_title=Fix Permissions
 perms_doing=Changing permissions on $1 to allow access by Apache ..
@@ -95,6 +96,7 @@ dump_efile=Missing file to save to
 dump_doing=Dumping repository to $1 ..
 dump_done=.. complete. The final dump size is $1.
 dump_failed=.. failed : $1
+dump_ecannot=You are not allowed to dump repositories
 
 load_title=Load Repository
 load_desc=This page can be used to restore or migrate a Subversion repository from a dump, made using the Dump Repository page or the <tt>svnadmin dump</tt> command.
@@ -111,3 +113,4 @@ load_doing=Loading repository from $1 ..
 load_doing2=Loading repository from uploaded file ..
 load_done=.. complete.
 load_failed=.. failed : $1
+load_ecannot=You are not allowed to load repositories

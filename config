@@ -2,3 +2,6 @@ svnadmin=svnadmin
 auth=Basic
 auto=0
 canfs=1
+cannotify=1
+candump=1
+canload=1

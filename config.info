@@ -3,3 +3,6 @@ auth=Authentication type,1,Basic-Basic,Digest-Digest
 passfile=Password file under home directory,3,Default (<tt>etc/svn.basic.passwd</tt>)
 auto=Add Autoversioning directive?,1,1-Yes,0-No
 canfs=Allow selection of repository filesystem type?,1,1-Yes,0-No
+cannotify=Allow post-commit email notifications?,1,1-Yes,0-No
+candump=Allow dumping of SVN repositories?,1,1-Yes,0-No
+canload=Allow loading of SVN repositories?,1,1-Yes,0-No

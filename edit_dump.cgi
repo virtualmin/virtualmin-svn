@@ -4,6 +4,7 @@
 require './virtualmin-svn-lib.pl';
 &ReadParse();
 &error_setup($text{'dump_err'});
+$config{'candump'} || &error($text{'dump_ecannot'});
 
 # Get the domain and repository
 $dom = &virtual_server::get_domain($in{'dom'});
