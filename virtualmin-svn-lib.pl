@@ -220,9 +220,9 @@ sub save_repository_email
 local ($dom, $rep, $email) = @_;
 local $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
 local $lref = &read_file_lines($pc);
+local $svnlook = &has_command("svnlook");
 if (!@$lref && $email) {
 	# Create initial file
-	local $svnlook = &has_command("svnlook");
 	$svnlook || &error("Could not find the svnlook command");
 	push(@$lref, "#!/bin/sh",
 		     "EMAIL=\"$email\"",
@@ -235,13 +235,16 @@ if (!@$lref && $email) {
 	&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'}, 0755, $pc);
 	}
 elsif (@$lref && $email) {
-	# Just update email, and comment in program
+	# Just update email, comment and SVNLOOK in program
 	foreach my $l (@$lref) {
 		if ($l =~ /^\s*EMAIL="(.*)"/) {
 			$l = "EMAIL=\"$email\"";
 			}
 		elsif ($l =~ /^#\S+\/commit-email.pl/) {
 			$l =~ s/^#//;
+			}
+		elsif ($l =~ /^\s*SVNLOOK="(.*)"/ && $svnlook) {
+			$l = "SVNLOOK=\"$svnlook\"";
 			}
 		}
 	&flush_file_lines($pc);
@@ -265,7 +268,8 @@ local ($dom, $rep, $file) = @_;
 local $cmd = "svnadmin dump -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
 	     " 2>&1 >".quotemeta($file);
 local $out = &virtual_server::run_as_domain_user($dom, $cmd);
-return $? ? "<pre>".&html_escape($out)."</pre>" : undef;
+return $out =~ /failed|error/i || !-r $file ?
+	"<pre>".&html_escape($out)."</pre>" : undef;
 }
 
 # load_rep(&domain, &rep, file)
@@ -276,7 +280,7 @@ local ($dom, $rep, $file) = @_;
 local $cmd = "svnadmin load -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
 	     " 2>&1 <".quotemeta($file);
 local $out = &virtual_server::run_as_domain_user($dom, $cmd);
-if ($?) {
+if ($out =~ /failed|error/i) {
 	return "<pre>".&html_escape($out)."</pre>";
 	}
 else {
