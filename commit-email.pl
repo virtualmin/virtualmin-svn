@@ -28,6 +28,9 @@
 # history and logs, available at http://subversion.tigris.org/.
 # ====================================================================
 
+# Set a safe path
+$ENV{'PATH'} = "/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/opt/csw/bin";
+
 # Turn on warnings the best way depending on the Perl version.
 BEGIN {
   if ( $] >= 5.006_000)
