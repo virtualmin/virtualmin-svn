@@ -228,7 +228,7 @@ if (!@$lref && $email) {
 		     "EMAIL=\"$email\"",
 		     "REPOS=\"\$1\"",
 		     "REV=\"\$2\"",
-		     "SVNLOOK=\"\$svnlook\"",
+		     "SVNLOOK=\"$svnlook\"",
 		     "export SVNLOOK",
 		     "$module_root_directory/commit-email.pl --from $dom->{'emailto'} -s \"SubVersion commit\" \"\$REPOS\" \"\$REV\" \"\$EMAIL\"");
 	&flush_file_lines($pc);
