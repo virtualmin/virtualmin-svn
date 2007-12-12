@@ -14,8 +14,10 @@ if ($err) {
 # Check if plugin is enabled
 if (&indexof($module_name, @virtual_server::plugins) < 0) {
 	if (&virtual_server::can_edit_templates()) {
+		$cgi = $virtual_server::module_info{'version'} >= 3.47 ?
+			"edit_newfeatures.cgi" : "edit_newplugins.cgi";
 		&ui_print_endpage(&text('index_eplugin',
-			"../virtual-server/edit_newplugin.cgi"));
+			"../virtual-server/$cgi"));
 		}
 	else {
 		&ui_print_endpage($text{'index_eplugin2'});
