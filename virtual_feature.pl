@@ -99,6 +99,7 @@ else {
 	if (!-d "$_[0]->{'home'}/svn") {
 		mkdir("$_[0]->{'home'}/svn", 0755);
 		chown($_[0]->{'uid'}, $_[0]->{'gid'}, "$_[0]->{'home'}/svn");
+		chmod(02755, "$_[0]->{'home'}/svn");
 		}
 	if (!-d "$_[0]->{'home'}/etc") {
 		mkdir("$_[0]->{'home'}/etc", 0755);
