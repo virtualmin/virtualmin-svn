@@ -85,6 +85,8 @@ return $_[1] || $_[2] ? 0 : 1;		# not for alias domains
 sub feature_setup
 {
 &$virtual_server::first_print($text{'setup_dav'});
+&virtual_server::obtain_lock_web($_[0])
+	if (defined(&virtual_server::obtain_lock_web));
 local $any;
 $any++ if (&add_svn_directives($_[0], $_[0]->{'web_port'}));
 $any++ if ($_[0]->{'ssl'} &&
@@ -106,14 +108,14 @@ else {
 		chown($_[0]->{'uid'}, $_[0]->{'gid'}, "$_[0]->{'home'}/etc");
 		}
 	if (!-r $passwd_file) {
-		open(PASSWD, ">$passwd_file");
-		close(PASSWD);
+		&open_lock_tempfile(PASSWD, ">$passwd_file", 0, 1);
+		&close_tempfile(PASSWD);
 		chown($_[0]->{'uid'}, $_[0]->{'gid'}, $passwd_file);
 		chmod(0755, $passwd_file);
 		}
 	if (!-r $conf_file) {
-		open(PASSWD, ">$conf_file");
-		close(PASSWD);
+		&open_lock_tempfile(PASSWD, ">$conf_file", 0, 1);
+		&close_tempfile(PASSWD);
 		chown($_[0]->{'uid'}, $_[0]->{'gid'}, $conf_file);
 		chmod(0755, $conf_file);
 		}
@@ -130,6 +132,8 @@ if (!exists($_[0]->{$module_name."limit"})) {
                 $tmpl->{$module_name."limit"} eq "none" ? "" :
                  $tmpl->{$module_name."limit"};
         }
+&virtual_server::release_lock_web($_[0])
+	if (defined(&virtual_server::release_lock_web));
 }
 
 sub add_svn_directives
@@ -137,7 +141,6 @@ sub add_svn_directives
 local ($d, $port) = @_;
 local ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
 if ($virt) {
-	&lock_file($virt->{'file'});
 	local $lref = &read_file_lines($virt->{'file'});
 	local ($locstart, $locend) =
 		&find_svn_lines($lref, $virt->{'line'}, $virt->{'eline'});
@@ -168,7 +171,6 @@ if ($virt) {
 		}
 	splice(@$lref, $virt->{'eline'}, 0, @lines);
 	&flush_file_lines();
-	&unlock_file($virt->{'file'});
 	undef(@apache::get_config_cache);
 	return 1;
 	}
@@ -184,9 +186,13 @@ sub feature_modify
 if ($_[0]->{'dom'} ne $_[1]->{'dom'}) {
 	# Change AuthName in webserver
 	&$virtual_server::first_print($text{'save_dav'});
+	&virtual_server::obtain_lock_web($_[0])
+		if (defined(&virtual_server::obtain_lock_web));
         &change_svn_directives($_[0], $_[0]->{'web_port'});
         &change_svn_directives($_[0], $_[0]->{'web_sslport'})
                 if ($_[0]->{'ssl'});
+	&virtual_server::release_lock_web($_[0])
+		if (defined(&virtual_server::release_lock_web));
 	&$virtual_server::second_print($virtual_server::text{'setup_done'});
 	}
 }
@@ -217,10 +223,14 @@ return 0;
 sub feature_delete
 {
 &$virtual_server::first_print($text{'delete_dav'});
+&virtual_server::obtain_lock_web($_[0])
+	if (defined(&virtual_server::obtain_lock_web));
 local $any;
 $any++ if (&remove_svn_directives($_[0], $_[0]->{'web_port'}));
 $any++ if ($_[0]->{'ssl'} &&
            &remove_svn_directives($_[0], $_[0]->{'web_sslport'}));
+&virtual_server::release_lock_web($_[0])
+	if (defined(&virtual_server::release_lock_web));
 if (!$any) {
 	&$virtual_server::second_print(
 		$virtual_server::text{'delete_noapache'});
@@ -236,7 +246,6 @@ sub remove_svn_directives
 local ($d, $port) = @_;
 local ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
 if ($virt) {
-	&lock_file($virt->{'file'});
         local $lref = &read_file_lines($virt->{'file'});
         local ($locstart, $locend) =
                 &find_svn_lines($lref, $virt->{'line'}, $virt->{'eline'});
@@ -244,7 +253,6 @@ if ($virt) {
                 splice(@$lref, $locstart, $locend-$locstart+1);
                 }
         &flush_file_lines();
-	&unlock_file($virt->{'file'});
         undef(@apache::get_config_cache);
         return 1;
         }
@@ -501,6 +509,8 @@ local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
 local $oun = &virtual_server::remove_userdom($olduser->{'user'}, $dom);
 local $rv;
 
+&lock_file(&passwd_file($dom));
+&lock_file(&conf_file($dom));
 if (!$new) {
 	($suser) = grep { $_->{'user'} eq $oun } @users;
 	}
@@ -549,6 +559,8 @@ elsif ($in->{$input_name} && $suser) {
 	&htaccess_htpasswd::modify_user($suser);
 	$rv = 1;
 	}
+&unlock_file(&passwd_file($dom));
+&unlock_file(&conf_file($dom));
 
 # Update list of repositories user has access to
 local %canreps = map { $_, 1 } split(/\0/, $in->{$input_name."_reps"});
@@ -583,6 +595,9 @@ local $oun = &virtual_server::remove_userdom($olduser->{'user'}, $dom);
 local ($suser) = grep { $_->{'user'} eq $oun } @users;
 return undef if (!$suser);
 
+&lock_file(&passwd_file($dom));
+&lock_file(&conf_file($dom));
+
 if ($un ne $oun && $suser) {
 	# User was re-named
 	$suser->{'user'} = $un;
@@ -609,6 +624,9 @@ if ($user->{'passmode'} == 3) {
 		}
 	&htaccess_htpasswd::modify_user($suser);
 	}
+
+&unlock_file(&passwd_file($dom));
+&unlock_file(&conf_file($dom));
 }
 
 # mailbox_delete(&user, &domain)
@@ -618,6 +636,10 @@ sub mailbox_delete
 local ($user, $dom) = @_;
 return undef if (!$dom || !$dom->{$module_name});
 &foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
+
+&lock_file(&passwd_file($dom));
+&lock_file(&conf_file($dom));
+
 local @users = &list_users($dom);
 local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
 local ($suser) = grep { $_->{'user'} eq $un } @users;
@@ -634,6 +656,9 @@ foreach $r (&list_reps($dom)) {
 		&save_rep_users($dom, $r, \@newrusers);
 		}
 	}
+
+&unlock_file(&passwd_file($dom));
+&unlock_file(&conf_file($dom));
 }
 
 # mailbox_header(&domain)
