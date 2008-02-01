@@ -13,7 +13,8 @@ $dom = &virtual_server::get_domain($id);
 ($rep) = grep { $_->{'rep'} eq $repname } @reps;
 $rep || &error($text{'delete_erep'});
 
-if ($in{$repdom} eq $text{'delete'}) {
+$button = $in{$repdom};
+if ($button eq &entities_to_ascii($text{'delete'})) {
 	# Deleting repositories
 	if ($in{'confirm'}) {
 		# Do it!
@@ -37,19 +38,19 @@ if ($in{$repdom} eq $text{'delete'}) {
 		&ui_print_footer("", $text{'index_return'});
 		}
 	}
-elsif ($in{$repdom} eq $text{'index_email'}) {
+elsif ($button eq &entities_to_ascii($text{'index_email'})) {
 	# Configuring email
 	&redirect("edit_email.cgi?dom=$id&rep=$repname");
 	}
-elsif ($in{$repdom} eq $text{'index_dump'}) {
+elsif ($button eq &entities_to_ascii($text{'index_dump'})) {
 	# Dumping repository
 	&redirect("edit_dump.cgi?dom=$id&rep=$repname");
 	}
-elsif ($in{$repdom} eq $text{'index_load'}) {
+elsif ($button eq &entities_to_ascii($text{'index_load'})) {
 	# Loading repository
 	&redirect("edit_load.cgi?dom=$id&rep=$repname");
 	}
-elsif ($in{$repdom} eq $text{'index_perms'}) {
+elsif ($button eq &entities_to_ascii($text{'index_perms'})) {
 	# Set permissions back to Apache user
 	&ui_print_header(&virtual_server::domain_in($dom),
 			 $text{'perms_title'}, "");
