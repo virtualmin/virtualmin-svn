@@ -41,47 +41,50 @@ if (!@mydoms) {
 					  $text{'index_edoms3'});
 	}
 
-if (@reps) {
-        if ($access{'max'} && $access{'max'} > @reps) {
-                print "<b>",&text('index_canadd0', $access{'max'}-@reps),
-                      "</b><p>\n";
-                }
-	print &ui_form_start("delete.cgi");
-	print &ui_columns_start([ $text{'index_rep'},
-				  $text{'index_dom'},
-				  $text{'index_dir'},
-				  $text{'index_action'} ]);
-	foreach $r (@reps) {
-		$dom = $r->{'dom'}->{'dom'};
-		@actions = (
-			&ui_submit($text{'delete'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
-			);
-		if ($config{'cannotify'}) {
-			push(@actions, &ui_submit($text{'index_email'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
-			}
-		push(@actions, &ui_submit($text{'index_perms'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
-		if ($config{'candump'}) {
-			push(@actions, &ui_submit($text{'index_dump'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
-			}
-		if ($config{'canload'}) {
-			push(@actions, &ui_submit($text{'index_load'},
-				   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
-			}
-		print &ui_columns_row([ $r->{'rep'},
-					$dom,
-					$r->{'dir'},
-					join(" ", @actions) ]);
+# Build table of repositories
+@table = ( );
+foreach $r (@reps) {
+	$dom = $r->{'dom'}->{'dom'};
+	@actions = (
+		&ui_submit($text{'delete'},
+			   $r->{'rep'}."\@".$r->{'dom'}->{'id'}),
+		);
+	if ($config{'cannotify'}) {
+		push(@actions, &ui_submit($text{'index_email'},
+			   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
 		}
-	print &ui_columns_end();
-	print &ui_form_end();
+	push(@actions, &ui_submit($text{'index_perms'},
+			   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
+	if ($config{'candump'}) {
+		push(@actions, &ui_submit($text{'index_dump'},
+			   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
+		}
+	if ($config{'canload'}) {
+		push(@actions, &ui_submit($text{'index_load'},
+			   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
+		}
+	push(@table, [ $r->{'rep'}, $dom, $r->{'dir'}, join(" ", @actions) ]);
 	}
-else {
-	print "<b>$text{'index_none'}</b><p>\n";
+
+# Show table of repos
+if ($access{'max'} && $access{'max'} > @reps) {
+	print "<b>",&text('index_canadd0', $access{'max'}-@reps),
+	      "</b><p>\n";
 	}
+print &ui_form_columns_table(
+	"delete.cgi",
+	undef,
+	0,
+	undef,
+	undef,
+	[ $text{'index_rep'}, $text{'index_dom'},
+	  $text{'index_dir'}, $text{'index_action'} ],
+	100,
+	\@table,
+	undef,
+	0,
+	undef,
+	$text{'index_none'});
 
 if ($access{'max'} && @reps >= $access{'max'}) {
 	# Cannot add any more
