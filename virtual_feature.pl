@@ -96,6 +96,7 @@ if (!$any) {
 		$virtual_server::text{'delete_noapache'});
 	}
 else {
+	# Create needed directories ~/etc/ and ~/svn
 	local $passwd_file = &passwd_file($_[0]);
 	local $conf_file = &conf_file($_[0]);
 	if (!-d "$_[0]->{'home'}/svn") {
@@ -107,6 +108,8 @@ else {
 		mkdir("$_[0]->{'home'}/etc", 0755);
 		chown($_[0]->{'uid'}, $_[0]->{'gid'}, "$_[0]->{'home'}/etc");
 		}
+
+	# Create password and configuration files
 	if (!-r $passwd_file) {
 		&open_lock_tempfile(PASSWD, ">$passwd_file", 0, 1);
 		&close_tempfile(PASSWD);
@@ -123,6 +126,30 @@ else {
 	&virtual_server::register_post_action(
 	    defined(&main::restart_apache) ? \&main::restart_apache
 					   : \&virtual_server::restart_apache);
+
+	# Grant access to the domain's owner
+	my $uinfo;
+	if (!$d->{'parent'} &&
+	    ($uinfo = &virtual_server::get_domain_owner($_[0]))) {
+		&$virtual_server::first_print($text{'setup_svnuser'});
+		local $un = &virtual_server::remove_userdom(
+			$uinfo->{'user'}, $_[0]);
+		local $newuser = { 'user' => $un,
+				   'enabled' => 1 };
+		if ($config{'auth'} eq 'Digest') {
+			# Do Digest encryption
+			$newuser->{'digest'} = 1;
+			$newuser->{'pass'} = &htaccess_htpasswd::digest_password
+				($un, $_[0]->{'dom'}, $_[0]->{'pass'});
+			}
+		else {
+			# Copy Unix crypted pass
+			$newuser->{'pass'} = $uinfo->{'pass'};
+			}
+		&htaccess_htpasswd::create_user($newuser, $passwd_file);
+		&$virtual_server::second_print(
+			$virtual_server::text{'setup_done'});
+		}
 	}
 
 # Set default limit from template

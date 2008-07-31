@@ -20,6 +20,7 @@ print $text{'dump_desc'},"<p>\n";
 print &ui_form_start("dump.cgi/$rep->{'rep'}.dump", "post");
 print &ui_hidden("dom", $in{'dom'});
 print &ui_hidden("rep", $in{'rep'});
+print &ui_hidden("show", $in{'show'});
 print &ui_table_start($text{'dump_header'}, undef, 2, [ "width=30%" ]);
 
 print &ui_table_row($text{'email_rep'}, "<tt>$in{'rep'}</tt>");
@@ -34,5 +35,5 @@ print &ui_table_row($text{'dump_to'},
 print &ui_table_end();
 print &ui_form_end([ [ undef, $text{'dump_ok'} ] ]);
 
-&ui_print_footer("", $text{'index_return'});
+&ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
 

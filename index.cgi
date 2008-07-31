@@ -2,8 +2,13 @@
 # Show all repositories for this user
 
 require './virtualmin-svn-lib.pl';
-
-&ui_print_header(undef, $text{'index_title'}, "", undef, 1, 1);
+&ReadParse();
+if ($in{'show'}) {
+	$showd = &virtual_server::get_domain_by("dom", $in{'show'});
+	$showd || &error($text{'index_eshow'});
+	}
+&ui_print_header($showd ? &virtual_server::domain_in($showd) : undef,
+		 $text{'index_title'}, "", undef, 1, 1);
 
 # Check if subversion is installed
 $err = &svn_check();
@@ -25,8 +30,7 @@ if (&indexof($module_name, @virtual_server::plugins) < 0) {
 	}
 
 # Show repositories for Virtualmin domains visible to the current user
-foreach $d ($in{'show'} ? ( &virtual_server::get_domain_by("dom", $in{'show'}) )
-			: &virtual_server::list_domains()) {
+foreach $d ($in{'show'} ? ( $showd ) : &virtual_server::list_domains()) {
 	$domcount++;
 	next if (!&can_edit_domain($d));
 	$accesscount++;
@@ -76,7 +80,7 @@ print &ui_form_columns_table(
 	undef,
 	0,
 	undef,
-	undef,
+	[ [ 'show', $in{'show'} ] ],
 	[ $text{'index_rep'}, $text{'index_dom'},
 	  $text{'index_dir'}, $text{'index_action'} ],
 	100,
@@ -93,6 +97,7 @@ if ($access{'max'} && @reps >= $access{'max'}) {
 else {
 	# Show form to add a repository
 	print &ui_form_start("add.cgi");
+	print &ui_hidden("show", $in{'show'});
 	print &ui_table_start($text{'index_header'}, undef, 2, [ "width=30%" ]);
 	print &ui_table_row($text{'index_rep'},
 			    &ui_textbox("rep", undef, 20), 1);

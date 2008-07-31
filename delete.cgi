@@ -5,7 +5,7 @@ require './virtualmin-svn-lib.pl';
 &ReadParse();
 
 # Get the domain and repository
-($repdom) = grep { $_ ne "confirm" } (keys %in);
+($repdom) = grep { $_ ne "confirm" && $_ ne "show" } (keys %in);
 ($repname, $id) = split(/\@/, $repdom);
 $dom = &virtual_server::get_domain($id);
 &can_edit_domain($dom) || &error($text{'add_edom'});
@@ -19,7 +19,7 @@ if ($button eq &entities_to_ascii($text{'delete'})) {
 	if ($in{'confirm'}) {
 		# Do it!
 		&delete_rep($dom, $rep);
-		&redirect("");
+		&redirect("index.cgi?show=$in{'show'}");
 		}
 	else {
 		# Ask first
@@ -35,20 +35,21 @@ if ($button eq &entities_to_ascii($text{'delete'})) {
 		print &ui_form_end([ [ "confirm", $text{'delete_ok'} ] ]);
 		print "</center>\n";
 
-		&ui_print_footer("", $text{'index_return'});
+		&ui_print_footer("index.cgi?show=$in{'show'}",
+				 $text{'index_return'});
 		}
 	}
 elsif ($button eq &entities_to_ascii($text{'index_email'})) {
 	# Configuring email
-	&redirect("edit_email.cgi?dom=$id&rep=$repname");
+	&redirect("edit_email.cgi?dom=$id&rep=$repname&show=$in{'show'}");
 	}
 elsif ($button eq &entities_to_ascii($text{'index_dump'})) {
 	# Dumping repository
-	&redirect("edit_dump.cgi?dom=$id&rep=$repname");
+	&redirect("edit_dump.cgi?dom=$id&rep=$repname&show=$in{'show'}");
 	}
 elsif ($button eq &entities_to_ascii($text{'index_load'})) {
 	# Loading repository
-	&redirect("edit_load.cgi?dom=$id&rep=$repname");
+	&redirect("edit_load.cgi?dom=$id&rep=$repname&show=$in{'show'}");
 	}
 elsif ($button eq &entities_to_ascii($text{'index_perms'})) {
 	# Set permissions back to Apache user
@@ -59,7 +60,7 @@ elsif ($button eq &entities_to_ascii($text{'index_perms'})) {
 	&set_rep_permissions($dom, $rep);
 	print $text{'perms_done'},"<p>\n";
 
-	&ui_print_footer("", $text{'index_return'});
+	&ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
 	}
 else {
 	&error($text{'delete_emode'});

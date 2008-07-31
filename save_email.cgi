@@ -17,5 +17,5 @@ $rep || &error($text{'delete_erep'});
 $in{'email_def'} || $in{'email'} =~ /\S/ || &error($text{'email_eemail'});
 &save_repository_email($dom, $rep, $in{'email_def'} ? undef : $in{'email'});
 
-&redirect("");
+&redirect("index.cgi?show=$in{'show'}");
 

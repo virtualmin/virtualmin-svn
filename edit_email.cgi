@@ -17,6 +17,7 @@ $rep || &error($text{'delete_erep'});
 print &ui_form_start("save_email.cgi");
 print &ui_hidden("dom", $in{'dom'});
 print &ui_hidden("rep", $in{'rep'});
+print &ui_hidden("show", $in{'show'});
 print &ui_table_start($text{'email_header'}, undef, 2);
 
 print &ui_table_row($text{'email_rep'}, "<tt>$in{'rep'}</tt>");
@@ -29,5 +30,5 @@ print &ui_table_row($text{'email_email'},
 print &ui_table_end();
 print &ui_form_end([ [ "save", $text{'save'} ] ]);
 
-&ui_print_footer("", $text{'index_return'});
+&ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
 

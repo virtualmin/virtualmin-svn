@@ -32,5 +32,5 @@ if ($in{'ro'}) {
 	&save_rep_users($dom, $rep, \@users);
 	}
 
-&redirect("");
+&redirect("index.cgi?show=$in{'show'}");
 

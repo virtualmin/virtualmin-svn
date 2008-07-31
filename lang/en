@@ -19,6 +19,7 @@ feat_evalidateconf=SVN configuration file $1 does not exist
 feat_evalidateloc=Missing SVN Location from Apache configuration
 
 setup_dav=Adding Subversion directives to website configuration ..
+setup_svnuser=Adding Subversion account for server administrator
 
 save_dav=Updating domain in website configuration ..
 
@@ -45,6 +46,7 @@ index_perms=Fix Permissions
 index_dump=Dump
 index_load=Load
 index_return=repositories list
+index_eshow=Virtual server to show does not exist!
 
 add_err=Failed to create repository
 add_erep=Missing or invalid repository name
@@ -62,7 +64,7 @@ delete_title=Delete Repository
 delete_rusure=Are you sure you want to delete the Subversion repository $1? $2 of source code and other files will be deleted.
 delete_ok=Yes, Delete It
 
-links_link=SVN Repositories
+links_link=Subversion Repositories
 
 limits_max=Maximum number of SVN repositories
 limits_emax=Missing or invalid maximum number of SVN repositories

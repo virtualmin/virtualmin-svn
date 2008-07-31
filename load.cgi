@@ -46,5 +46,5 @@ else {
 	print $text{'load_done'},"<p>\n";
 	}
 
-&ui_print_footer("", $text{'index_return'});
+&ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
 

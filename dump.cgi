@@ -48,6 +48,6 @@ else {
 		print &text('dump_done', &nice_size($st[7])),"<p>\n";
 		}
 
-	&ui_print_footer("", $text{'index_return'});
+	&ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
 	}
 

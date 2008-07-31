@@ -9,3 +9,6 @@ Added Module Config option to disallow selection of FS type.
 ---- Changes since 3.1 ----
 Added a button for fixing permissions and ownership on SVN repositories.
 Added buttons for dumping and loading SVN repositories.
+---- Changes since 3.5 ----
+When the Subversion feature is enabled for a domain, the administrator is automatically given SVN access by default.
+Fixed up all links on the list of repositories to always show those from the domain linked from on the left menu.
