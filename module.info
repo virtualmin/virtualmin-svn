@@ -4,3 +4,4 @@ depends=virtual-server/2.27 htaccess-htpasswd 1.420
 version=3.5
 readonly=1
 desc_nl=Virtualmin Subversie Repositories
+feedback=jcameron@webmin.com
