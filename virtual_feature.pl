@@ -193,7 +193,7 @@ if ($virt) {
 			@adp,
 			"Require valid-user",
 			"AuthzSVNAccessFile $conf_file",
-			"Satisfy All",
+			"Satisfy Any",
 		        "</Location>");
 		}
 	splice(@$lref, $virt->{'eline'}, 0, @lines);
