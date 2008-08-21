@@ -1,6 +1,6 @@
 # Defines functions for this feature
 
-require 'virtualmin-svn-lib.pl';
+do 'virtualmin-svn-lib.pl';
 $input_name = $module_name;
 $input_name =~ s/[^A-Za-z0-9]/_/g;
 
