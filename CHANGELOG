@@ -12,3 +12,5 @@ Added buttons for dumping and loading SVN repositories.
 ---- Changes since 3.5 ----
 When the Subversion feature is enabled for a domain, the administrator is automatically given SVN access by default.
 Fixed up all links on the list of repositories to always show those from the domain linked from on the left menu.
+---- Changes since 3.6 ----
+When a domain's admin password is changed and the domain owner has an SVN account, it is updated to match.

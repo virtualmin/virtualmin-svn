@@ -213,14 +213,35 @@ sub feature_modify
 if ($_[0]->{'dom'} ne $_[1]->{'dom'}) {
 	# Change AuthName in webserver
 	&$virtual_server::first_print($text{'save_dav'});
-	&virtual_server::obtain_lock_web($_[0])
-		if (defined(&virtual_server::obtain_lock_web));
+	&virtual_server::obtain_lock_web($_[0]);
         &change_svn_directives($_[0], $_[0]->{'web_port'});
         &change_svn_directives($_[0], $_[0]->{'web_sslport'})
                 if ($_[0]->{'ssl'});
-	&virtual_server::release_lock_web($_[0])
-		if (defined(&virtual_server::release_lock_web));
+	&virtual_server::release_lock_web($_[0]);
 	&$virtual_server::second_print($virtual_server::text{'setup_done'});
+	}
+if ($_[0]->{'pass'} ne $_[1]->{'pass'}) {
+	# Change password for domain admin, if he has an SVN account
+	local @users = &list_users($_[0]);
+	local ($suser) = grep { $_->{'user'} eq $_[0]->{'user'} } @users;
+	if ($suser) {
+		&$virtual_server::first_print($text{'save_davpass'});
+		&lock_file(&passwd_file($_[0]));
+		&lock_file(&conf_file($_[0]));
+		if ($config{'auth'} eq 'Digest') {
+			$suser->{'pass'} = &htaccess_htpasswd::digest_password(
+			    $_[0]->{'user'}, $_[0]->{'dom'}, $_[0]->{'pass'});
+			}
+		else {
+			$suser->{'pass'} = &htaccess_htpasswd::encrypt_password(
+			    $_[0]->{'pass'});
+			}
+		&htaccess_htpasswd::modify_user($suser);
+		&unlock_file(&passwd_file($_[0]));
+		&unlock_file(&conf_file($_[0]));
+		&$virtual_server::second_print(
+			$virtual_server::text{'setup_done'});
+		}
 	}
 }
 

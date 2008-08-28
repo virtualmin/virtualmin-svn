@@ -21,7 +21,8 @@ feat_evalidateloc=Missing SVN Location from Apache configuration
 setup_dav=Adding Subversion directives to website configuration ..
 setup_svnuser=Adding Subversion account for server administrator
 
-save_dav=Updating domain in website configuration ..
+save_dav=Updating Subversion domain in website configuration ..
+save_davpass=Updating Subversion password for administration user ..
 
 delete_dav=Removing Subversion directives from website configuration ..
 
