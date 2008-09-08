@@ -57,7 +57,8 @@ return @rv;
 sub save_rep_users
 {
 local ($dom, $rep, $users) = @_;
-local $lref = &read_file_lines(&conf_file($_[0]));
+local $conf_file = &conf_file($_[0]);
+local $lref = &read_file_lines($conf_file);
 local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 local @lines = ( "[$rep->{'rep'}:/]",
 		 map { "$_->{'user'} = $_->{'perms'}" } @$users );
@@ -67,7 +68,9 @@ if (defined($start)) {
 else {
 	push(@$lref, @lines);
 	}
-&flush_file_lines();
+&flush_file_lines($conf_file);
+&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'},
+			   0755, $conf_file);
 }
 
 # rep_users_lines(&domain, &rep, &lref)

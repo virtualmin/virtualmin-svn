@@ -100,27 +100,28 @@ else {
 	local $passwd_file = &passwd_file($_[0]);
 	local $conf_file = &conf_file($_[0]);
 	if (!-d "$_[0]->{'home'}/svn") {
-		mkdir("$_[0]->{'home'}/svn", 0755);
-		chown($_[0]->{'uid'}, $_[0]->{'gid'}, "$_[0]->{'home'}/svn");
-		chmod(02755, "$_[0]->{'home'}/svn");
+		&make_dir("$_[0]->{'home'}/svn", 0755);
+		&set_ownership_permissions($_[0]->{'uid'}, $_[0]->{'gid'},
+					   02755, "$_[0]->{'home'}/svn");
 		}
 	if (!-d "$_[0]->{'home'}/etc") {
-		mkdir("$_[0]->{'home'}/etc", 0755);
-		chown($_[0]->{'uid'}, $_[0]->{'gid'}, "$_[0]->{'home'}/etc");
+		&make_dir("$_[0]->{'home'}/etc", 0755);
+		&set_ownership_permissions($_[0]->{'uid'}, $_[0]->{'gid'},
+					   0755, "$_[0]->{'home'}/etc");
 		}
 
 	# Create password and configuration files
 	if (!-r $passwd_file) {
 		&open_lock_tempfile(PASSWD, ">$passwd_file", 0, 1);
 		&close_tempfile(PASSWD);
-		chown($_[0]->{'uid'}, $_[0]->{'gid'}, $passwd_file);
-		chmod(0755, $passwd_file);
+		&set_ownership_permissions($_[0]->{'uid'}, $_[0]->{'gid'},
+					   0755, $passwd_file);
 		}
 	if (!-r $conf_file) {
 		&open_lock_tempfile(PASSWD, ">$conf_file", 0, 1);
 		&close_tempfile(PASSWD);
-		chown($_[0]->{'uid'}, $_[0]->{'gid'}, $conf_file);
-		chmod(0755, $conf_file);
+		&set_ownership_permissions($_[0]->{'uid'}, $_[0]->{'gid'},
+					   0755, $conf_file);
 		}
 	&$virtual_server::second_print($virtual_server::text{'setup_done'});
 	&virtual_server::register_post_action(
@@ -585,6 +586,8 @@ if ($in->{$input_name} && !$suser) {
 			}
 		}
 	&htaccess_htpasswd::create_user($newuser, &passwd_file($dom));
+	&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'},
+				   0755, &passwd_file($dom));
 	$rv = 1;
 	}
 elsif (!$in->{$input_name} && $suser) {
