@@ -133,6 +133,7 @@ else {
 	if (!$d->{'parent'} &&
 	    ($uinfo = &virtual_server::get_domain_owner($_[0]))) {
 		&$virtual_server::first_print($text{'setup_svnuser'});
+		&foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
 		local $un = &virtual_server::remove_userdom(
 			$uinfo->{'user'}, $_[0]);
 		local $newuser = { 'user' => $un,
