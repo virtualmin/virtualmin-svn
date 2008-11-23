@@ -317,10 +317,10 @@ sub find_svn_lines
 {
 local ($locstart, $locend, $i);
 for($i=$_[1]; $i<=$_[2]; $i++) {
-	if ($_[0]->[$i] =~ /^<Location\s+\/svn>/i && !$locstart) {
+	if ($_[0]->[$i] =~ /^\s*<Location\s+\/svn>/i && !$locstart) {
 		$locstart = $i;
 		}
-	elsif ($_[0]->[$i] =~ /^<\/Location>/i && $locstart && !$locend) {
+	elsif ($_[0]->[$i] =~ /^\s*<\/Location>/i && $locstart && !$locend) {
 		$locend = $i;
 		}
 	}
