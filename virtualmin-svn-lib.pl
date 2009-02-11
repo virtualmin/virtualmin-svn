@@ -143,7 +143,7 @@ else {
 	}
 local @uinfo = getpwnam($webuser);
 &system_logged("chown -R $uinfo[2]:$dom->{'gid'} $qdir");
-&system_logged("chmod -R 2770 $qdir");
+&system_logged("chmod -R 770 $qdir");
 }
 
 # delete_rep(&domain, &rep)
