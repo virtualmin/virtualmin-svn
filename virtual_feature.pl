@@ -503,19 +503,20 @@ if (!$suser && !@inreps) {
 	# Use default repositories
 	@inreps = split(/\s+/, $defs{'reps'});
 	}
-local $dis1 = &js_disable_inputs([ ], [ $input_name."_reps" ]);
-local $dis2 = &js_disable_inputs([ $input_name."_reps" ], [ ]);
+@inreps = sort { $a cmp $b } @inreps;
+@reps = sort { $a->{'rep'} cmp $b->{'rep'} } @reps;
+local @inputs = ( $input_name."_reps_opts",
+		  $input_name."_reps_vals" );
 local $hasuser = $suser || $new && $defs{'svn'};
 return &ui_table_row(&hlink($text{'mail_svn'}, "svn"),
-		     &ui_radio($input_name,
-		       $hasuser ? 1 : 0,
-		       [ [ 1, $text{'yes'}, "onClick='$dis1'" ],
-			 [ 0, $text{'no'}, "onClick='$dis2'" ] ]))."\n".
+		     &ui_yesno_radio($input_name, $hasuser ? 1 : 0)).
        &ui_table_row(&hlink($text{'mail_reps'}, "reps"),
-		     &ui_select($input_name."_reps",
-				\@inreps,
-				[ map { [ $_->{'rep'}, $_->{'rep'} ] } @reps ],
-				3, 1, 0, !$hasuser));
+		     &ui_multi_select(
+			$input_name."_reps",
+			[ map { [ $_, $_ ] } @inreps ],
+			[ map { [ $_->{'rep'}, $_->{'rep'} ] } @reps ],
+			5, 0, 0,
+			$text{'mail_repsin'}, $text{'mail_repsopts'}));
 }
 
 # mailbox_validate(&user, &olduser, &in, new, &domain)
@@ -616,7 +617,7 @@ elsif ($in->{$input_name} && $suser) {
 &unlock_file(&conf_file($dom));
 
 # Update list of repositories user has access to
-local %canreps = map { $_, 1 } split(/\0/, $in->{$input_name."_reps"});
+local %canreps = map { $_, 1 } split(/\r?\n/, $in->{$input_name."_reps"});
 %canreps = ( ) if (!$in->{$input_name});
 local $r;
 foreach $r (&list_reps($dom)) {

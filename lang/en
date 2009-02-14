@@ -55,6 +55,8 @@ add_edom=You do not have acces to that domain
 
 mail_svn=Subversion login enabled?
 mail_reps=Allow access to repositories
+mail_repsin=Allowed repos
+mail_repsopts=All repos
 mail_header=SVN?
 mail_clash=A Subversion user with the same name already exists
 mail_pass=A password must be entered when enabling SVN for a user
