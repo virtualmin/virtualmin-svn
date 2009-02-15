@@ -1,7 +1,7 @@
 desc=Virtualmin Subversion Repositories
 category=servers
 depends=virtual-server/2.27 htaccess-htpasswd 1.420
-version=3.9
+version=4.0
 readonly=1
 desc_nl=Virtualmin Subversie Repositories
 feedback=jcameron@webmin.com

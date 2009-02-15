@@ -1,0 +1,6 @@
+desc=Users for SVN repositories
+html=When creating a new SVN respostory, you can now select existing users in the domain to grant access to it.
+master=1
+reseller=1
+owner=1
+link=/virtualmin-svn/index.cgi?show=$DOM
