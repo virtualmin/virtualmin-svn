@@ -569,25 +569,8 @@ if (!$new) {
 if ($in->{$input_name} && !$suser) {
 	# Add the user
 	local $newuser = { 'user' => $un,
-			   'enabled' => 1,
-			   'pass' => $user->{'pass'} };
-	if ($config{'auth'} eq 'Digest') {
-		# Set digest password
-		$newuser->{'digest'} = 1;
-		$newuser->{'dom'} = $dom->{'dom'};
-		if ($user->{'user'} eq $dom->{'user'}) {
-			$newuser->{'pass'} = &htaccess_htpasswd::digest_password(
-				$un, $dom->{'dom'}, $dom->{'pass'});
-			}
-		elsif ($user->{'passmode'} == 3 ||
-		       defined($user->{'plainpass'})) {
-			$newuser->{'pass'} = &htaccess_htpasswd::digest_password(
-				$un, $dom->{'dom'}, $user->{'plainpass'});
-			}
-		else {
-			$newuser->{'pass'} = "UNKNOWN";
-			}
-		}
+			   'enabled' => 1 };
+	&set_user_password($newuser, $user, $dom);
 	&htaccess_htpasswd::create_user($newuser, &passwd_file($dom));
 	&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'},
 				   0755, &passwd_file($dom));

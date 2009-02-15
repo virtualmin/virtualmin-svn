@@ -48,6 +48,9 @@ index_dump=Dump
 index_load=Load
 index_return=repositories list
 index_eshow=Virtual server to show does not exist!
+index_grant=Grant access to users
+index_allusers=Users in domain
+index_grantusers=Users with access
 
 add_err=Failed to create repository
 add_erep=Missing or invalid repository name

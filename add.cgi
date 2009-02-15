@@ -25,12 +25,35 @@ $rep = { 'rep' => $in{'rep'} };
 $err = &create_rep($dom, $rep, $in{'type'});
 &error("<pre>$err</pre>") if ($err);
 
+@repousers = &list_rep_users($dom, $rep);
 if ($in{'ro'}) {
 	# Add the anonymous user
-	local @users = &list_rep_users($dom, $rep);
-	push(@users, { 'user' => '*', 'perms' => 'r' });
-	&save_rep_users($dom, $rep, \@users);
+	push(@repousers, { 'user' => '*', 'perms' => 'r' });
 	}
+
+# Grant selected users
+@grants = split(/\r?\n/, $in{'users'});
+%already = map { $_->{'user'}, $_ } &list_users($dom);
+@domusers = &virtual_server::list_domain_users($dom, 0, 1, 1, 1);
+
+foreach $uname (@grants) {
+	if (!$already{$uname}) {
+		# Need to create the user
+		($domuser) = grep { &virtual_server::remove_userdom(
+				      $_->{'user'}, $dom) eq $uname } @domusers;
+		next if (!$domuser);
+		local $newuser = { 'user' => $uname,
+				   'enabled' => 1 };
+		&set_user_password($newuser, $domuser, $dom);
+		&htaccess_htpasswd::create_user($newuser, &passwd_file($dom));
+		&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'},
+					   0755, &passwd_file($dom));
+		}
+	# Add to this repo
+	push(@repousers, { 'user' => $uname,
+			   'perms' => 'rw' });
+	}
+&save_rep_users($dom, $rep, \@repousers);
 
 &redirect("index.cgi?show=$in{'show'}");
 

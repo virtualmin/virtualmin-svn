@@ -90,28 +90,59 @@ print &ui_form_columns_table(
 	undef,
 	$text{'index_none'});
 
+print "<p>\n";
 if ($access{'max'} && @reps >= $access{'max'}) {
 	# Cannot add any more
-	print $text{'index_max'},"<br>\n";
+	print $text{'index_max'},"<p>\n";
 	}
 else {
 	# Show form to add a repository
 	print &ui_form_start("add.cgi");
 	print &ui_hidden("show", $in{'show'});
 	print &ui_table_start($text{'index_header'}, undef, 2, [ "width=30%" ]);
+
+	# Repo name
 	print &ui_table_row($text{'index_rep'},
 			    &ui_textbox("rep", undef, 20), 1);
+
+	# In domain
 	print &ui_table_row($text{'index_dom'},
 		    &ui_select("dom", undef,
 			[ map { [ $_->{'id'}, $_->{'dom'} ] } @mydoms ]));
+
+	# Users to grant
+	@unames = ( );
+	if ($showd) {
+		foreach $u (&virtual_server::list_domain_users(
+				$showd, 0, 1, 1, 1)) {
+			push(@unames, &virtual_server::remove_userdom(
+					$u->{'user'}, $showd));
+			}
+		}
+	if (@unames) {
+		print &ui_table_row($text{'index_grant'},
+			&ui_multi_select(
+			    "users",
+			    [ ],
+			    [ map { [ $_, $_ ] } @unames ],
+			    5, 0, 0,
+			    $text{'index_allusers'},
+			    $text{'index_grantusers'},
+			    ));
+		}
+
+	# SVN filesystem type
 	if (&supports_fs_type()) {
 		print &ui_table_row($text{'index_type'},
-				    &ui_select("type", "fsfs",
-					    [ [ "fsfs", "Versioned Filesystem (FSFS)" ],
-					      [ "bdb", "Berkeley DB" ] ]));
+			    &ui_select("type", "fsfs",
+				    [ [ "fsfs", "Versioned Filesystem (FSFS)" ],
+				      [ "bdb", "Berkeley DB" ] ]));
 		}
+
+	# Readonly?
 	print &ui_table_row($text{'index_ro'},
 			    &ui_yesno_radio("ro", 0));
+
 	print &ui_table_end();
 	print &ui_submit($text{'create'});
 	print &ui_form_end();

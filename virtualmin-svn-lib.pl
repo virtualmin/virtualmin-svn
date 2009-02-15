@@ -292,5 +292,34 @@ else {
 	}
 }
 
+# set_user_password(&svn-user, &virtualmin-user, &domain)
+# Sets password fields for an SVN user based on their virtualmin user hash
+sub set_user_password
+{
+local ($newuser, $user, $dom) = @_;
+if ($config{'auth'} eq 'Digest') {
+	# Digest mode .. need to re-hash from plain pass
+	$newuser->{'digest'} = 1;
+	$newuser->{'dom'} = $dom->{'dom'};
+	if ($user->{'user'} eq $dom->{'user'}) {
+		$newuser->{'pass'} = &htaccess_htpasswd::digest_password(
+			$newuser->{'user'}, $dom->{'dom'}, $dom->{'pass'});
+		}
+	elsif ($user->{'passmode'} == 3 ||
+	       defined($user->{'plainpass'})) {
+		$newuser->{'pass'} = &htaccess_htpasswd::digest_password(
+			$newuser->{'user'}, $dom->{'dom'},$user->{'plainpass'});
+		}
+	else {
+		$newuser->{'pass'} = "UNKNOWN";
+		}
+	}
+else {
+	# Just copy hashed password
+	$newuser->{'digest'} = 0;
+	$newuser->{'pass'} = $user->{'pass'};
+	}
+}
+
 1;
 

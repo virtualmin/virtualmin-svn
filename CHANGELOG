@@ -15,4 +15,5 @@ Fixed up all links on the list of repositories to always show those from the dom
 ---- Changes since 3.6 ----
 When a domain's admin password is changed and the domain owner has an SVN account, it is updated to match.
 ---- Changes since 3.9 ----
-Changes the repository selector to a left-right chooser for easily selection from large lists.
+Changed the repository selector to a left-right chooser for easily selection from large lists.
+On the repository creation form, existing users can be selected to be granted access to the new repository.

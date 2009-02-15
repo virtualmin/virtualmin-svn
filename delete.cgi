@@ -30,6 +30,7 @@ if ($button eq &entities_to_ascii($text{'delete'})) {
 		$size = &disk_usage_kb("$dom->{'home'}/svn/$rep->{'rep'}");
 		print &ui_form_start("delete.cgi");
 		print &ui_hidden($repdom, $in{$repdom});
+		print &ui_hidden("show", $in{'show'});
 		print &text('delete_rusure', "<tt>$repname</tt>",
 			    &nice_size($size*1024)),"<p>\n";
 		print &ui_form_end([ [ "confirm", $text{'delete_ok'} ] ]);
