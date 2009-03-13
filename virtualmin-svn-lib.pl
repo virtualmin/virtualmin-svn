@@ -275,7 +275,7 @@ local ($dom, $rep, $file) = @_;
 local $cmd = "svnadmin dump -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
 	     " 2>&1 >".quotemeta($file);
 local $out = &virtual_server::run_as_domain_user($dom, $cmd);
-return $out =~ /failed|error/i || !-r $file ?
+return $out =~ /failed|error/i || !-r $file || $? ?
 	"<pre>".&html_escape($out)."</pre>" : undef;
 }
 
@@ -287,7 +287,7 @@ local ($dom, $rep, $file) = @_;
 local $cmd = "svnadmin load -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
 	     " 2>&1 <".quotemeta($file);
 local $out = &virtual_server::run_as_domain_user($dom, $cmd);
-if ($out =~ /failed|error/i) {
+if ($out =~ /failed|error/i || $?) {
 	return "<pre>".&html_escape($out)."</pre>";
 	}
 else {
