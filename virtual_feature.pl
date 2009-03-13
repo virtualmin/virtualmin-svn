@@ -516,7 +516,7 @@ return &ui_table_row(&hlink($text{'mail_svn'}, "svn"),
 			[ map { [ $_, $_ ] } @inreps ],
 			[ map { [ $_->{'rep'}, $_->{'rep'} ] } @reps ],
 			5, 0, 0,
-			$text{'mail_repsin'}, $text{'mail_repsopts'}));
+			$text{'mail_repsopts'}, $text{'mail_repsin'}));
 }
 
 # mailbox_validate(&user, &olduser, &in, new, &domain)
