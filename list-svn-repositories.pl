@@ -20,7 +20,7 @@ if (!$module_name) {
 		chdir($1);
 		}
 	chop($pwd = `pwd`);
-	$0 = "$pwd/list-domains.pl";
+	$0 = "$pwd/list-svn-repositories.pl";
 	require './virtualmin-svn-lib.pl';
 	$< == 0 || die "list-svn-repositories.pl must be run as root";
 	}
