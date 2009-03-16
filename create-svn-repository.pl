@@ -24,6 +24,7 @@ if (!$module_name) {
 	require './virtualmin-svn-lib.pl';
 	$< == 0 || die "create-svn-repository must be run as root";
 	}
+@OLDARGV = @ARGV;
 
 # Parse command-line args
 $type = "fsfs";
@@ -62,6 +63,10 @@ $clash && &usage("A repository with the same name already exists");
 # Create it
 $rep = { 'rep' => $rname };
 $err = &create_rep($d, $rep, $type);
+if ($err) {
+	print "Failed to create SVN repository : $err\n";
+	exit(1);
+	}
 
 # Add the anonymous user
 if ($anonymous) {
@@ -70,6 +75,7 @@ if ($anonymous) {
 	&save_rep_users($d, $rep, \@repousers);
 	}
 
+&virtual_server::virtualmin_api_log(\@OLDARGV, $d);
 print "Created SVN repository $rname\n";
 
 sub usage

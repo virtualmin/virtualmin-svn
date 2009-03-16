@@ -58,10 +58,12 @@ return @rv;
 }
 
 # save_rep_users(&domain, &rep, &users)
+# Updates the list of users for some repository
 sub save_rep_users
 {
 local ($dom, $rep, $users) = @_;
 local $conf_file = &conf_file($_[0]);
+&lock_file($conf_file);
 local $lref = &read_file_lines($conf_file);
 local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 local @lines = ( "[$rep->{'rep'}:/]",
@@ -73,6 +75,7 @@ else {
 	push(@$lref, @lines);
 	}
 &flush_file_lines($conf_file);
+&unlock_file($conf_file);
 &set_ownership_permissions($dom->{'uid'}, $dom->{'gid'},
 			   0755, $conf_file);
 }
@@ -119,12 +122,14 @@ if ($?) {
 	}
 &set_rep_permissions($dom, $rep);
 
+&lock_file(&conf_file($dom));
 local $lref = &read_file_lines(&conf_file($dom));
 local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 if (!defined($start)) {
 	push(@$lref, "[$rep->{'rep'}:/]");
 	&flush_file_lines();
 	}
+&unlock_file(&conf_file($dom));
 }
 
 # set_rep_permissions(&domain, &rep)
@@ -133,18 +138,7 @@ sub set_rep_permissions
 {
 local ($dom, $rep) = @_;
 local $qdir = quotemeta($rep->{'dir'});
-local $webuser;
-if (defined(&virtual_server::get_apache_user)) {
-	$webuser = &virtual_server::get_apache_user($dom);
-	}
-else {
-	foreach my $u ("httpd", "apache", "www", "nobody") {
-		if (defined(getpwnam($u))) {
-			$webuser = $u;
-			last;
-			}
-		}
-	}
+local $webuser = &virtual_server::get_apache_user($dom);
 local @uinfo = getpwnam($webuser);
 &system_logged("chown -R $uinfo[2]:$dom->{'gid'} $qdir");
 &system_logged("chmod -R 770 $qdir");
@@ -156,12 +150,14 @@ sub delete_rep
 {
 local ($dom, $rep) = @_;
 &system_logged("rm -rf ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}"));
+&lock_file(&conf_file($dom));
 local $lref = &read_file_lines(&conf_file($dom));
 local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 if (defined($start)) {
 	splice(@$lref, $start, $end-$start+1);
 	&flush_file_lines();
 	}
+&unlock_file(&conf_file($dom));
 }
 
 sub supports_fs_type
@@ -226,6 +222,7 @@ sub save_repository_email
 {
 local ($dom, $rep, $email) = @_;
 local $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
+&lock_file($pc);
 local $lref = &read_file_lines($pc);
 local $svnlook = &has_command("svnlook");
 if (!@$lref && $email) {
@@ -265,6 +262,7 @@ elsif (@$lref && !$email) {
 		}
 	&flush_file_lines($pc);
 	}
+&unlock_file($pc);
 }
 
 # dump_rep(&domain, &rep, file)
