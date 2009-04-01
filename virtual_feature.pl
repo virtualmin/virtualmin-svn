@@ -392,8 +392,10 @@ local ($d, $file, $opts) = @_;
 &$virtual_server::first_print($text{'feat_backup'});
 
 # Copy actual repositories
+local $tar = defined(&virtual_server::get_tar_command) ?
+		&virtual_server::get_tar_command() : "tar";
 local $out = &backquote_command("cd ".quotemeta("$d->{'home'}/svn")." && ".
-				"tar cf ".quotemeta($file)." . 2>&1");
+				"$tar cf ".quotemeta($file)." . 2>&1");
 if ($?) {
 	&$virtual_server::second_print(&text('feat_tar', "<pre>$out</pre>"));
 	return 0;
@@ -427,8 +429,10 @@ local ($d, $file, $opts) = @_;
 &$virtual_server::first_print($text{'feat_restore'});
 
 # Extract tar file of repositories (deleting old ones first)
+local $tar = defined(&virtual_server::get_tar_command) ?
+		&virtual_server::get_tar_command() : "tar";
 &backquote_logged("rm -rf ".quotemeta("$d->{'home'}/svn")."/*");
-local $out = &backquote_logged("cd ".quotemeta("$d->{'home'}/svn")." && tar xf ".quotemeta($file)." 2>&1");
+local $out = &backquote_logged("cd ".quotemeta("$d->{'home'}/svn")." && $tar xf ".quotemeta($file)." 2>&1");
 if ($?) {
 	&$virtual_server::second_print(&text('feat_untar', "<pre>$out</pre>"));
 	return 0;
