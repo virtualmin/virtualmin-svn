@@ -83,8 +83,8 @@ sub usage
 print "$_[0]\n\n" if ($_[0]);
 print "Creates an SVN repository owned by some virtual server.\n";
 print "\n";
-print "usage: create-svn-repository.pl --domain name\n";
-print "                                --name repo-name\n";
+print "virtualmin create-svn-repository --domain name\n";
+print "                                 --name repo-name\n";
 print "                                [--bdb]\n";
 print "                                [--anonymous]\n";
 exit(1);

@@ -80,8 +80,8 @@ sub usage
 print "$_[0]\n\n" if ($_[0]);
 print "Lists the SVN repositories for some virtual server.\n";
 print "\n";
-print "usage: list-svn-repositories.pl [--multiline | --name-only]\n";
-print "                                --domain name\n";
+print "virtualmin list-svn-repositories [--multiline | --name-only]\n";
+print "                                  --domain name\n";
 exit(1);
 }
 

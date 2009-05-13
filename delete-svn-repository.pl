@@ -68,8 +68,8 @@ sub usage
 print "$_[0]\n\n" if ($_[0]);
 print "Deletes an SVN repository owned by some virtual server.\n";
 print "\n";
-print "usage: delete-svn-repository.pl --domain name\n";
-print "                                --name repo-name\n";
+print "virtualmin delete-svn-repository --domain name\n";
+print "                                 --name repo-name\n";
 exit(1);
 }
 
