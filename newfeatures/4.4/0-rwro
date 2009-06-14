@@ -1,0 +1,5 @@
+desc=Read-only SVN repository access
+html=Users can now be granted read/write or read-only access to SVN repositories
+master=1
+reseller=1
+owner=1

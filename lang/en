@@ -57,12 +57,14 @@ add_erep=Missing or invalid repository name
 add_edom=You do not have acces to that domain
 
 mail_svn=Subversion login enabled?
-mail_reps=Allow access to repositories
+mail_reps=Read/write access to repositories
+mail_roreps=Read-only access to repositories
 mail_repsin=Allowed repos
 mail_repsopts=All repos
 mail_header=SVN?
 mail_clash=A Subversion user with the same name already exists
 mail_pass=A password must be entered when enabling SVN for a user
+mail_repoclash=The SVN repository $1 cannot selected for both read/write and re-ad-only access
 
 delete_erep=Repository does not exist
 delete_emode=No button clicked!

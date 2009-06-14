@@ -495,19 +495,25 @@ if (!$new) {
 	}
 local $main::ui_table_cols = 2;
 local @reps = &list_reps($dom);
-local @inreps;
+local (@rwreps, @roreps);
 foreach $r (@reps) {
 	local @rusers = &list_rep_users($dom, $r->{'rep'});
 	local ($ruser) = grep { $_->{'user'} eq $un } @rusers;
-	push(@inreps, $r->{'rep'}) if ($ruser);
+	if ($ruser && $ruser->{'perms'} eq 'rw') {
+		push(@rwreps, $r->{'rep'});
+		}
+	elsif ($ruser && $ruser->{'perms'} eq 'ro') {
+		push(@roreps, $r->{'rep'});
+		}
 	}
 local %defs;
 &read_file("$module_config_directory/defaults.$dom->{'id'}", \%defs);
-if (!$suser && !@inreps) {
+if (!$suser && !@rwreps) {
 	# Use default repositories
-	@inreps = split(/\s+/, $defs{'reps'});
+	@rwreps = split(/\s+/, $defs{'reps'});
 	}
-@inreps = sort { $a cmp $b } @inreps;
+@rwreps = sort { $a cmp $b } @rwreps;
+@roreps = sort { $a cmp $b } @roreps;
 @reps = sort { $a->{'rep'} cmp $b->{'rep'} } @reps;
 local @inputs = ( $input_name."_reps_opts",
 		  $input_name."_reps_vals" );
@@ -516,10 +522,17 @@ return &ui_table_row(&hlink($text{'mail_svn'}, "svn"),
 		     &ui_yesno_radio($input_name, $hasuser ? 1 : 0)).
        &ui_table_row(&hlink($text{'mail_reps'}, "reps"),
 		     &ui_multi_select(
-			$input_name."_reps",
-			[ map { [ $_, $_ ] } @inreps ],
+			$input_name."_rwreps",
+			[ map { [ $_, $_ ] } @rwreps ],
 			[ map { [ $_->{'rep'}, $_->{'rep'} ] } @reps ],
-			5, 0, 0,
+			3, 0, 0,
+			$text{'mail_repsopts'}, $text{'mail_repsin'})).
+       &ui_table_row(&hlink($text{'mail_roreps'}, "roreps"),
+		     &ui_multi_select(
+			$input_name."_roreps",
+			[ map { [ $_, $_ ] } @roreps ],
+			[ map { [ $_->{'rep'}, $_->{'rep'} ] } @reps ],
+			3, 0, 0,
 			$text{'mail_repsopts'}, $text{'mail_repsin'}));
 }
 
@@ -548,6 +561,13 @@ if ($in->{$input_name}) {
             $config{'auth'} eq 'Digest') {
                 return $text{'mail_pass'};
                 }
+
+	# Make sure rw and ro repos don't clash
+	local @rwreps = split(/\r?\n/, $in->{$input_name."_rwreps"});
+	local @roreps = split(/\r?\n/, $in->{$input_name."_roreps"});
+	foreach my $r (@rwreps) {
+		&indexof($r, @roreps) < 0 || return &text('mail_repoclash', $r);
+		}
 	}
 return undef;
 }
@@ -604,18 +624,25 @@ elsif ($in->{$input_name} && $suser) {
 &unlock_file(&conf_file($dom));
 
 # Update list of repositories user has access to
-local %canreps = map { $_, 1 } split(/\r?\n/, $in->{$input_name."_reps"});
-%canreps = ( ) if (!$in->{$input_name});
-local $r;
-foreach $r (&list_reps($dom)) {
+local %canrwreps = map { $_, 1 } split(/\r?\n/, $in->{$input_name."_rwreps"});
+local %canroreps = map { $_, 1 } split(/\r?\n/, $in->{$input_name."_roreps"});
+if (!$in->{$input_name}) {
+	%canrwreps = ( );
+	%canroreps = ( );
+	}
+foreach my $r (&list_reps($dom)) {
 	local @rusers = &list_rep_users($dom, $r->{'rep'});
 	local ($ruser) = grep { $_->{'user'} eq $oun } @rusers;
 	@rusers = grep { $_ ne $ruser } @rusers;
-	if ($canreps{$r->{'rep'}}) {
+	if ($canrwreps{$r->{'rep'}}) {
 		push(@rusers, { 'user' => $un,
 				'perms' => 'rw' });
 		}
-	if ($ruser || $canreps{$r->{'rep'}}) {
+	elsif ($canroreps{$r->{'rep'}}) {
+		push(@rusers, { 'user' => $un,
+				'perms' => 'ro' });
+		}
+	if ($ruser || $canrwreps{$r->{'rep'}} || $canroreps{$r->{'rep'}}) {
 		# Only save if user was there before or is now
 		&save_rep_users($dom, $r, \@rusers);
 		}

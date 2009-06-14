@@ -17,3 +17,5 @@ When a domain's admin password is changed and the domain owner has an SVN accoun
 ---- Changes since 3.9 ----
 Changed the repository selector to a left-right chooser for easily selection from large lists.
 On the repository creation form, existing users can be selected to be granted access to the new repository.
+---- Changes since 4.3 ----
+Read-only and read-write SVN repositories can now be selected separately.
