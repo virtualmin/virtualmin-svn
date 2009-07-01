@@ -86,8 +86,7 @@ return $_[1] || $_[2] ? 0 : 1;		# not for alias domains
 sub feature_setup
 {
 &$virtual_server::first_print($text{'setup_dav'});
-&virtual_server::obtain_lock_web($_[0])
-	if (defined(&virtual_server::obtain_lock_web));
+&virtual_server::obtain_lock_web($_[0]);
 local $any;
 $any++ if (&add_svn_directives($_[0], $_[0]->{'web_port'}));
 $any++ if ($_[0]->{'ssl'} &&
@@ -101,33 +100,37 @@ else {
 	local $passwd_file = &passwd_file($_[0]);
 	local $conf_file = &conf_file($_[0]);
 	if (!-d "$_[0]->{'home'}/svn") {
-		&make_dir("$_[0]->{'home'}/svn", 0755);
-		&set_ownership_permissions($_[0]->{'uid'}, $_[0]->{'gid'},
-					   02755, "$_[0]->{'home'}/svn");
+		&virtual_server::make_dir_as_domain_user(
+			$_[0], "$_[0]->{'home'}/svn", 02755);
 		}
 	if (!-d "$_[0]->{'home'}/etc") {
-		&make_dir("$_[0]->{'home'}/etc", 0755);
-		&set_ownership_permissions($_[0]->{'uid'}, $_[0]->{'gid'},
-					   0755, "$_[0]->{'home'}/etc");
+		&virtual_server::make_dir_as_domain_user(
+			$_[0], "$_[0]->{'home'}/etc", 0755);
 		}
 
 	# Create password and configuration files
 	if (!-r $passwd_file) {
-		&open_lock_tempfile(PASSWD, ">$passwd_file", 0, 1);
-		&close_tempfile(PASSWD);
-		&set_ownership_permissions($_[0]->{'uid'}, $_[0]->{'gid'},
-					   0755, $passwd_file);
+		&lock_file($passwd_file);
+		&virtual_server::open_tempfile_as_domain_user(
+			$_[0], PASSWD, ">$passwd_file", 0, 1);
+		&virtual_server::close_tempfile_as_domain_user(
+			$_[0], PASSWD);
+		&virtual_server::set_permissions_as_domain_user(
+			$_[0], 0755, $passwd_file);
+		&unlock_file($passwd_file);
 		}
 	if (!-r $conf_file) {
-		&open_lock_tempfile(PASSWD, ">$conf_file", 0, 1);
-		&close_tempfile(PASSWD);
-		&set_ownership_permissions($_[0]->{'uid'}, $_[0]->{'gid'},
-					   0755, $conf_file);
+		&lock_file($conf_file);
+		&virtual_server::open_tempfile_as_domain_user(
+			$_[0], PASSWD, ">$conf_file", 0, 1);
+		&virtual_server::close_tempfile_as_domain_user(
+			$_[0], PASSWD);
+		&virtual_server::set_permissions_as_domain_user(
+			$_[0], 0755, $conf_file);
+		&unlock_file($conf_file);
 		}
 	&$virtual_server::second_print($virtual_server::text{'setup_done'});
-	&virtual_server::register_post_action(
-	    defined(&main::restart_apache) ? \&main::restart_apache
-					   : \&virtual_server::restart_apache);
+	&virtual_server::register_post_action(\&virtual_server::restart_apache);
 
 	# Grant access to the domain's owner
 	my $uinfo;
@@ -149,7 +152,9 @@ else {
 			# Copy Unix crypted pass
 			$newuser->{'pass'} = $uinfo->{'pass'};
 			}
-		&htaccess_htpasswd::create_user($newuser, $passwd_file);
+		&virtual_server::write_as_domain_user($_[0],
+			sub { &htaccess_htpasswd::create_user(
+				$newuser, $passwd_file) });
 		&$virtual_server::second_print(
 			$virtual_server::text{'setup_done'});
 		}
@@ -162,8 +167,7 @@ if (!exists($_[0]->{$module_name."limit"})) {
                 $tmpl->{$module_name."limit"} eq "none" ? "" :
                  $tmpl->{$module_name."limit"};
         }
-&virtual_server::release_lock_web($_[0])
-	if (defined(&virtual_server::release_lock_web));
+&virtual_server::release_lock_web($_[0]);
 }
 
 sub add_svn_directives
@@ -239,7 +243,8 @@ if ($_[0]->{'pass'} ne $_[1]->{'pass'}) {
 			$suser->{'pass'} = &htaccess_htpasswd::encrypt_password(
 			    $_[0]->{'pass'});
 			}
-		&htaccess_htpasswd::modify_user($suser);
+		&virtual_server::write_as_domain_user($_[0],
+			sub { &htaccess_htpasswd::modify_user($suser) });
 		&unlock_file(&passwd_file($_[0]));
 		&unlock_file(&conf_file($_[0]));
 		&$virtual_server::second_print(
@@ -274,14 +279,12 @@ return 0;
 sub feature_delete
 {
 &$virtual_server::first_print($text{'delete_dav'});
-&virtual_server::obtain_lock_web($_[0])
-	if (defined(&virtual_server::obtain_lock_web));
+&virtual_server::obtain_lock_web($_[0]);
 local $any;
 $any++ if (&remove_svn_directives($_[0], $_[0]->{'web_port'}));
 $any++ if ($_[0]->{'ssl'} &&
            &remove_svn_directives($_[0], $_[0]->{'web_sslport'}));
-&virtual_server::release_lock_web($_[0])
-	if (defined(&virtual_server::release_lock_web));
+&virtual_server::release_lock_web($_[0]);
 if (!$any) {
 	&$virtual_server::second_print(
 		$virtual_server::text{'delete_noapache'});
@@ -392,8 +395,7 @@ local ($d, $file, $opts) = @_;
 &$virtual_server::first_print($text{'feat_backup'});
 
 # Copy actual repositories
-local $tar = defined(&virtual_server::get_tar_command) ?
-		&virtual_server::get_tar_command() : "tar";
+local $tar = &virtual_server::get_tar_command();
 local $out = &backquote_command("cd ".quotemeta("$d->{'home'}/svn")." && ".
 				"$tar cf ".quotemeta($file)." . 2>&1");
 if ($?) {
@@ -429,8 +431,7 @@ local ($d, $file, $opts) = @_;
 &$virtual_server::first_print($text{'feat_restore'});
 
 # Extract tar file of repositories (deleting old ones first)
-local $tar = defined(&virtual_server::get_tar_command) ?
-		&virtual_server::get_tar_command() : "tar";
+local $tar = &virtual_server::get_tar_command();
 &backquote_logged("rm -rf ".quotemeta("$d->{'home'}/svn")."/*");
 local $out = &backquote_logged("cd ".quotemeta("$d->{'home'}/svn")." && $tar xf ".quotemeta($file)." 2>&1");
 if ($?) {
@@ -595,14 +596,17 @@ if ($in->{$input_name} && !$suser) {
 	local $newuser = { 'user' => $un,
 			   'enabled' => 1 };
 	&set_user_password($newuser, $user, $dom);
-	&htaccess_htpasswd::create_user($newuser, &passwd_file($dom));
-	&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'},
-				   0755, &passwd_file($dom));
+	&virtual_server::write_as_domain_user($dom,
+		sub { &htaccess_htpasswd::create_user(
+			$newuser, &passwd_file($dom)) });
+	&virtual_server::set_permissions_as_domain_user(
+		$dom, 0755, &passwd_file($dom));
 	$rv = 1;
 	}
 elsif (!$in->{$input_name} && $suser) {
 	# Delete the user
-	&htaccess_htpasswd::delete_user($suser);
+	&virtual_server::write_as_domain_user($dom,
+		sub { &htaccess_htpasswd::delete_user($suser) });
 	$rv = 0;
 	}
 elsif ($in->{$input_name} && $suser) {
@@ -617,7 +621,8 @@ elsif ($in->{$input_name} && $suser) {
 			$suser->{'pass'} = $user->{'pass'};
 			}
 		}
-	&htaccess_htpasswd::modify_user($suser);
+	&virtual_server::write_as_domain_user($dom,
+		sub { &htaccess_htpasswd::modify_user($suser) });
 	$rv = 1;
 	}
 &unlock_file(&passwd_file($dom));
@@ -690,7 +695,8 @@ if ($user->{'passmode'} == 3) {
 		$suser->{'pass'} = &htaccess_htpasswd::encrypt_password(
 			$user->{'plainpass'});
 		}
-	&htaccess_htpasswd::modify_user($suser);
+	&virtual_server::write_as_domain_user($dom,
+		sub { &htaccess_htpasswd::modify_user($suser) });
 	}
 
 &unlock_file(&passwd_file($dom));
@@ -712,7 +718,8 @@ local @users = &list_users($dom);
 local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
 local ($suser) = grep { $_->{'user'} eq $un } @users;
 if ($suser) {
-	&htaccess_htpasswd::delete_user($suser);
+	&virtual_server::write_as_domain_user($dom,
+		sub { &htaccess_htpasswd::delete_user($suser) });
 	}
 
 # Remove from all repositories

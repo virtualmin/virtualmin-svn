@@ -64,7 +64,7 @@ sub save_rep_users
 local ($dom, $rep, $users) = @_;
 local $conf_file = &conf_file($_[0]);
 &lock_file($conf_file);
-local $lref = &read_file_lines($conf_file);
+local $lref = &virtual_server::read_file_lines_as_domain_user($dom, $conf_file);
 local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 local @lines = ( "[$rep->{'rep'}:/]",
 		 map { "$_->{'user'} = $_->{'perms'}" } @$users );
@@ -74,10 +74,9 @@ if (defined($start)) {
 else {
 	push(@$lref, @lines);
 	}
-&flush_file_lines($conf_file);
+&virtual_server::flush_file_lines_as_domain_user($dom, $conf_file);
 &unlock_file($conf_file);
-&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'},
-			   0755, $conf_file);
+&virtual_server::set_permissions_as_domain_user($dom, 0755, $conf_file);
 }
 
 # rep_users_lines(&domain, &rep, &lref)
@@ -111,25 +110,28 @@ sub create_rep
 local ($dom, $rep, $type) = @_;
 $rep->{'dir'} = "$dom->{'home'}/svn/$rep->{'rep'}";
 local $qdir = quotemeta($rep->{'dir'});
+local $cmd;
 if (&supports_fs_type()) {
-	$out = &backquote_logged("svnadmin create --fs-type $type $qdir 2>&1");
+	$cmd = "svnadmin create --fs-type $type $qdir 2>&1";
 	}
 else {
-	$out = &backquote_logged("svnadmin create $qdir 2>&1");
+	$cmd = "svnadmin create $qdir 2>&1";
 	}
-if ($?) {
+local ($out, $ex) = &virtual_server::run_as_domain_user($dom, $cmd);
+if ($ex) {
 	return $out;
 	}
 &set_rep_permissions($dom, $rep);
 
-&lock_file(&conf_file($dom));
-local $lref = &read_file_lines(&conf_file($dom));
+local $cfile = &conf_file($dom);
+&lock_file($cfile);
+local $lref = &virtual_server::read_file_lines_as_domain_user($dom, $cfile);
 local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 if (!defined($start)) {
 	push(@$lref, "[$rep->{'rep'}:/]");
-	&flush_file_lines();
+	&virtual_server::flush_file_lines_as_domain_user($dom, $cfile);
 	}
-&unlock_file(&conf_file($dom));
+&unlock_file($cfile);
 }
 
 # set_rep_permissions(&domain, &rep)
@@ -140,8 +142,8 @@ local ($dom, $rep) = @_;
 local $qdir = quotemeta($rep->{'dir'});
 local $webuser = &virtual_server::get_apache_user($dom);
 local @uinfo = getpwnam($webuser);
-&system_logged("chown -R $uinfo[2]:$dom->{'gid'} $qdir");
-&system_logged("chmod -R 770 $qdir");
+&virtual_server::run_as_domain_user($dom, "chmod -R 770 $qdir");
+&system_logged("chown -R $uinfo[2] $qdir");
 }
 
 # delete_rep(&domain, &rep)
@@ -149,15 +151,17 @@ local @uinfo = getpwnam($webuser);
 sub delete_rep
 {
 local ($dom, $rep) = @_;
-&system_logged("rm -rf ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}"));
-&lock_file(&conf_file($dom));
-local $lref = &read_file_lines(&conf_file($dom));
+&virtual_server::unlink_file_as_domain_user(
+	$dom, "$dom->{'home'}/svn/$rep->{'rep'}");
+local $cfile = &conf_file($dom);
+&lock_file($cfile);
+local $lref = &virtual_server::read_file_lines_as_domain_user($dom, $cfile);
 local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 if (defined($start)) {
 	splice(@$lref, $start, $end-$start+1);
-	&flush_file_lines();
+	&virtual_server::flush_file_lines_as_domain_user($dom, $cfile);
 	}
-&unlock_file(&conf_file($dom));
+&unlock_file($cfile);
 }
 
 sub supports_fs_type
@@ -223,7 +227,7 @@ sub save_repository_email
 local ($dom, $rep, $email) = @_;
 local $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
 &lock_file($pc);
-local $lref = &read_file_lines($pc);
+local $lref = &virtual_server::read_file_lines_as_domain_user($dom, $pc);
 local $svnlook = &has_command("svnlook");
 if (!@$lref && $email) {
 	# Create initial file
@@ -235,8 +239,8 @@ if (!@$lref && $email) {
 		     "SVNLOOK=\"$svnlook\"",
 		     "export SVNLOOK",
 		     "$module_root_directory/commit-email.pl --from $dom->{'emailto'} -s \"SubVersion commit\" \"\$REPOS\" \"\$REV\" \"\$EMAIL\"");
-	&flush_file_lines($pc);
-	&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'}, 0755, $pc);
+	&virtual_server::flush_file_lines_as_domain_user($dom, $pc);
+	&virtual_server::set_permissions_as_domain_user($dom, 0755, $pc);
 	}
 elsif (@$lref && $email) {
 	# Just update email, comment and SVNLOOK in program
@@ -251,7 +255,7 @@ elsif (@$lref && $email) {
 			$l = "SVNLOOK=\"$svnlook\"";
 			}
 		}
-	&flush_file_lines($pc);
+	&virtual_server::flush_file_lines_as_domain_user($dom, $pc);
 	}
 elsif (@$lref && !$email) {
 	# Comment out the program
@@ -260,7 +264,7 @@ elsif (@$lref && !$email) {
 			$l = "#$l";
 			}
 		}
-	&flush_file_lines($pc);
+	&virtual_server::flush_file_lines_as_domain_user($dom, $pc);
 	}
 &unlock_file($pc);
 }

@@ -45,9 +45,11 @@ foreach $uname (@grants) {
 		local $newuser = { 'user' => $uname,
 				   'enabled' => 1 };
 		&set_user_password($newuser, $domuser, $dom);
-		&htaccess_htpasswd::create_user($newuser, &passwd_file($dom));
-		&set_ownership_permissions($dom->{'uid'}, $dom->{'gid'},
-					   0755, &passwd_file($dom));
+		&virtual_server::write_as_domain_user($dom,
+			sub { &htaccess_htpasswd::create_user(
+				$newuser, &passwd_file($dom)) });
+		&virtual_server::set_permissions_as_domain_user(
+			$dom, 0755, &passwd_file($dom));
 		}
 	# Add to this repo
 	push(@repousers, { 'user' => $uname,
