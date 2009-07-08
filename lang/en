@@ -64,7 +64,7 @@ mail_repsopts=All repos
 mail_header=SVN?
 mail_clash=A Subversion user with the same name already exists
 mail_pass=A password must be entered when enabling SVN for a user
-mail_repoclash=The SVN repository $1 cannot selected for both read/write and re-ad-only access
+mail_repoclash=The SVN repository $1 cannot selected for both read/write and read-only access
 
 delete_erep=Repository does not exist
 delete_emode=No button clicked!

@@ -167,6 +167,13 @@ if (!exists($_[0]->{$module_name."limit"})) {
                 $tmpl->{$module_name."limit"} eq "none" ? "" :
                  $tmpl->{$module_name."limit"};
         }
+
+# Make sure /svn isn't proxied
+if (defined(&virtual_server::setup_noproxy_path)) {
+	&virtual_server::setup_noproxy_path(
+		$_[0], { }, undef, { 'path' => '/svn/' }, 1);
+	}
+
 &virtual_server::release_lock_web($_[0]);
 }
 
@@ -292,6 +299,12 @@ if (!$any) {
 else {
 	&$virtual_server::second_print($virtual_server::text{'setup_done'});
 	&virtual_server::register_post_action(\&virtual_server::restart_apache);
+
+	# Make sure /svn isn't proxied
+	if (defined(&virtual_server::delete_noproxy_path)) {
+		&virtual_server::delete_noproxy_path(
+			$_[0], { }, undef, { 'path' => '/svn/' });
+		}
 	}
 }
 

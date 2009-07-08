@@ -19,3 +19,5 @@ Changed the repository selector to a left-right chooser for easily selection fro
 On the repository creation form, existing users can be selected to be granted access to the new repository.
 ---- Changes since 4.3 ----
 Read-only and read-write SVN repositories can now be selected separately.
+---- Changes since 4.4 ----
+Proxying for /svn is disabled, so that the SVN feature works even if some other script (like one using Rails) has a proxy for /.
