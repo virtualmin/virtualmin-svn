@@ -195,6 +195,10 @@ if ($virt) {
 			("AuthDigestProvider file") : ( );
 	local @auto;
 	@auto = ( "SVNAutoversioning on") if ($config{'auto'});
+	local @norewrite;
+	if ($apache::httpd_modules{'mod_rewrite'}) {
+		@norewrite = ( "RewriteEngine off" );
+		}
 	if (!$locstart) {
 		push(@lines,
 			"<Location /svn>",
@@ -208,6 +212,7 @@ if ($virt) {
 			"Require valid-user",
 			"AuthzSVNAccessFile $conf_file",
 			"Satisfy Any",
+			@norewrite,
 		        "</Location>");
 		}
 	splice(@$lref, $virt->{'eline'}, 0, @lines);
@@ -300,7 +305,7 @@ else {
 	&$virtual_server::second_print($virtual_server::text{'setup_done'});
 	&virtual_server::register_post_action(\&virtual_server::restart_apache);
 
-	# Make sure /svn isn't proxied
+	# Remove negative proxy for /svn
 	if (defined(&virtual_server::delete_noproxy_path)) {
 		&virtual_server::delete_noproxy_path(
 			$_[0], { }, undef, { 'path' => '/svn/' });
