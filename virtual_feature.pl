@@ -521,7 +521,7 @@ foreach $r (@reps) {
 	if ($ruser && $ruser->{'perms'} eq 'rw') {
 		push(@rwreps, $r->{'rep'});
 		}
-	elsif ($ruser && $ruser->{'perms'} eq 'ro') {
+	elsif ($ruser && $ruser->{'perms'} eq 'r') {
 		push(@roreps, $r->{'rep'});
 		}
 	}
@@ -663,7 +663,7 @@ foreach my $r (&list_reps($dom)) {
 		}
 	elsif ($canroreps{$r->{'rep'}}) {
 		push(@rusers, { 'user' => $un,
-				'perms' => 'ro' });
+				'perms' => 'r' });
 		}
 	if ($ruser || $canrwreps{$r->{'rep'}} || $canroreps{$r->{'rep'}}) {
 		# Only save if user was there before or is now
