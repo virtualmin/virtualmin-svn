@@ -63,6 +63,10 @@ elsif ($button eq &entities_to_ascii($text{'index_perms'})) {
 
 	&ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
 	}
+elsif ($button eq &entities_to_ascii($text{'index_anon'})) {
+	# Anonymous access form
+	&redirect("edit_anon.cgi?dom=$id&rep=$repname&show=$in{'show'}");
+	}
 else {
 	&error($text{'delete_emode'});
 	}

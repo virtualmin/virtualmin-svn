@@ -43,7 +43,8 @@ return undef;
 # Returns a list of all users with access to some repository
 sub list_rep_users
 {
-local $lref = &read_file_lines(&conf_file($_[0]));
+local $lref = &virtual_server::read_file_lines_as_domain_user(
+		$_[0], &conf_file($_[0]));
 local (@rv, $inrep, $l);
 foreach $l (@$lref) {
 	if ($l =~ /^\s*\[(.*):\/\S*\]/) {

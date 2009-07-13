@@ -1,0 +1,6 @@
+desc=Anonymous access
+html=Anonymous access to Subversion repositories can be configured after creation
+master=1
+reseller=1
+domain=1
+link=index.cgi?show=${DOM}

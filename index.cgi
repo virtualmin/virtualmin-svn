@@ -67,6 +67,8 @@ foreach $r (@reps) {
 		push(@actions, &ui_submit($text{'index_load'},
 			   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
 		}
+	push(@actions, &ui_submit($text{'index_anon'},
+			   $r->{'rep'}."\@".$r->{'dom'}->{'id'}));
 	push(@table, [ $r->{'rep'}, $dom, $r->{'dir'}, join(" ", @actions) ]);
 	}
 

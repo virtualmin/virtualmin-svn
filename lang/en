@@ -44,6 +44,7 @@ index_max=You are not allowed to add any more SVN repositories.
 index_canadd0=Based on your limits, $1 additional repositories can be added.
 index_email=Email Notifications
 index_perms=Fix Permissions
+index_anon=Anonymous Access
 index_dump=Dump
 index_load=Load
 index_return=repositories list
@@ -89,6 +90,7 @@ email_email=Send email after commits?
 email_none=Don't send
 email_send=Send to
 email_ecannot=You are not allowed to configure email settings
+email_eemail=Missing email address
 
 perms_title=Fix Permissions
 perms_doing=Changing permissions on $1 to allow access by Apache ..
@@ -124,3 +126,10 @@ load_doing2=Loading repository from uploaded file ..
 load_done=.. complete.
 load_failed=.. failed : $1
 load_ecannot=You are not allowed to load repositories
+
+anon_title=Anonymous Access
+anon_header=Anonymous access options
+anon_anon=Allow anonymous access?
+anon_perms=Access level
+anon_rw=Read and write
+anon_r=Read-only
