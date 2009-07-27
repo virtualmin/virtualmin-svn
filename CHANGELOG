@@ -21,3 +21,5 @@ On the repository creation form, existing users can be selected to be granted ac
 Read-only and read-write SVN repositories can now be selected separately.
 ---- Changes since 4.4 ----
 Proxying for /svn is disabled, so that the SVN feature works even if some other script (like one using Rails) has a proxy for /.
+---- Changes since 4.5 ----
+Restores of SVN repositories and config files are now done as the virtual server owner, to avoid problems with malicious symlinks.

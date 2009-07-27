@@ -450,24 +450,30 @@ local ($d, $file, $opts) = @_;
 
 # Extract tar file of repositories (deleting old ones first)
 local $tar = &virtual_server::get_tar_command();
-&backquote_logged("rm -rf ".quotemeta("$d->{'home'}/svn")."/*");
-local $out = &backquote_logged("cd ".quotemeta("$d->{'home'}/svn")." && $tar xf ".quotemeta($file)." 2>&1");
-if ($?) {
+&virtual_server::run_as_domain_user($d,
+	"rm -rf ".quotemeta("$d->{'home'}/svn")."/*");
+local ($out, $ex) = &virtual_server::run_as_domain_user($d,
+	"cd ".quotemeta("$d->{'home'}/svn")." && $tar xf ".quotemeta($file)." 2>&1");
+if ($ex) {
 	&$virtual_server::second_print(&text('feat_untar', "<pre>$out</pre>"));
 	return 0;
 	}
 
 # Copy users file
-local $pfile = &passwd_file($_[0]);
-if (!&copy_source_dest($file."_users", $pfile)) {
-	&$virtual_server::second_print($text{'feat_copypfile'});
+local $pfile = &passwd_file($d);
+local ($ok, $out) = &virtual_server::copy_source_dest_as_domain_user(
+    		$d, $file."_users", $pfile);
+if (!$ok) {
+	&$virtual_server::second_print(&text('feat_copypfile2', $out));
 	return 0;
 	}
 
 # Copy config file
-local $cfile = &conf_file($_[0]);
-if (!&copy_source_dest($file."_config", $cfile)) {
-	&$virtual_server::second_print($text{'feat_copycfile'});
+local $cfile = &conf_file($d);
+($ok, $out) = &virtual_server::copy_source_dest_as_domain_user(
+		$d, $file."_config", $cfile);
+if (!$ok) {
+	&$virtual_server::second_print(&text('feat_copycfile2', $out));
 	return 0;
 	}
 
