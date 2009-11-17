@@ -16,10 +16,12 @@ if (!$module_name) {
 	$main::no_acl_check++;
 	$ENV{'WEBMIN_CONFIG'} ||= "/etc/webmin";
 	$ENV{'WEBMIN_VAR'} ||= "/var/webmin";
-	if ($0 =~ /^(.*\/)[^\/]+$/) {
-		chdir($1);
+	if ($0 =~ /^(.*)\/[^\/]+$/) {
+		chdir($pwd = $1);
 		}
-	chop($pwd = `pwd`);
+	else {
+		chop($pwd = `pwd`);
+		}
 	$0 = "$pwd/create-svn-repository.pl";
 	require './virtualmin-svn-lib.pl';
 	$< == 0 || die "create-svn-repository must be run as root";
