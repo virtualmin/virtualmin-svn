@@ -540,24 +540,36 @@ if (!$suser && !@rwreps) {
 @rwreps = sort { $a cmp $b } @rwreps;
 @roreps = sort { $a cmp $b } @roreps;
 @reps = sort { $a->{'rep'} cmp $b->{'rep'} } @reps;
-local @inputs = ( $input_name."_reps_opts",
-		  $input_name."_reps_vals" );
+local @inputs = ( $input_name."_rwreps_opts", $input_name."_rwreps_vals",
+		  $input_name."_rwreps_add", $input_name."_rwreps_remove",
+		  $input_name."_roreps_opts", $input_name."_roreps_vals",
+		  $input_name."_roreps_add", $input_name."_roreps_remove", );
 local $hasuser = $suser || $new && $defs{'svn'};
+local $dis = $hasuser ? 0 : 1;
+if (&get_webmin_version() < 1.501) {
+	# Only Webmin 1.501 and later support disabling multi-select properly
+	$dis = 0;
+	@inputs = ( );
+	}
+local $jsenable = &js_disable_inputs([ ], \@inputs, "onClick");
+local $jsdisable = &js_disable_inputs(\@inputs, [ ], "onClick");
 return &ui_table_row(&hlink($text{'mail_svn'}, "svn"),
-		     &ui_yesno_radio($input_name, $hasuser ? 1 : 0)).
+		     &ui_radio($input_name, $hasuser ? 1 : 0,
+			       [ [ 1, $text{'yes'}, $jsenable ],
+				 [ 0, $text{'no'}, $jsdisable ] ])).
        &ui_table_row(&hlink($text{'mail_reps'}, "reps"),
 		     &ui_multi_select(
 			$input_name."_rwreps",
 			[ map { [ $_, $_ ] } @rwreps ],
 			[ map { [ $_->{'rep'}, $_->{'rep'} ] } @reps ],
-			3, 0, 0,
+			3, 0, $hasuser ? 0 : 1,
 			$text{'mail_repsopts'}, $text{'mail_repsin'})).
        &ui_table_row(&hlink($text{'mail_roreps'}, "roreps"),
 		     &ui_multi_select(
 			$input_name."_roreps",
 			[ map { [ $_, $_ ] } @roreps ],
 			[ map { [ $_->{'rep'}, $_->{'rep'} ] } @reps ],
-			3, 0, 0,
+			3, 0, $dis,
 			$text{'mail_repsopts'}, $text{'mail_repsin'}));
 }
 
