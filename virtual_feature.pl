@@ -450,8 +450,7 @@ local ($d, $file, $opts) = @_;
 
 # Extract tar file of repositories (deleting old ones first)
 local $tar = &virtual_server::get_tar_command();
-&virtual_server::run_as_domain_user($d,
-	"rm -rf ".quotemeta("$d->{'home'}/svn")."/*");
+&execute_command("rm -rf ".quotemeta("$d->{'home'}/svn")."/*");
 local ($out, $ex) = &virtual_server::run_as_domain_user($d,
 	"cd ".quotemeta("$d->{'home'}/svn")." && $tar xf ".quotemeta($file)." 2>&1");
 if ($ex) {
@@ -475,6 +474,11 @@ local $cfile = &conf_file($d);
 if (!$ok) {
 	&$virtual_server::second_print(&text('feat_copycfile2', $out));
 	return 0;
+	}
+
+# Fix repo permissions
+foreach my $rep (&list_reps($d)) {
+	&set_rep_permissions($dom, $rep);
 	}
 
 &$virtual_server::second_print($virtual_server::text{'setup_done'});
