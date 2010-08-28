@@ -133,3 +133,11 @@ anon_anon=Allow anonymous access?
 anon_perms=Access level
 anon_rw=Read and write
 anon_r=Read-only
+
+log_add_repo=Created repository $1 in $2
+log_delete_repo=Deleted repository $1 in $2
+log_fix_repo=Fixed permissions for repository $1 in $2
+log_dump_repo=Dumped contents of repository $1 in $2
+log_load_repo=Loaded contents of repository $1 in $2
+log_anon_repo=Changed anonymous access to repository $1 in $2
+log_email_repo=Changed email notification for repository $1 in $2

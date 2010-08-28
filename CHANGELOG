@@ -23,3 +23,5 @@ Read-only and read-write SVN repositories can now be selected separately.
 Proxying for /svn is disabled, so that the SVN feature works even if some other script (like one using Rails) has a proxy for /.
 ---- Changes since 4.5 ----
 Restores of SVN repositories and config files are now done as the virtual server owner, to avoid problems with malicious symlinks.
+---- Changes since 4.7 ----
+Added logging for all actions on repositories, visible in the Webmin Actions Log module.

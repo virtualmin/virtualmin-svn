@@ -44,6 +44,7 @@ if ($err) {
 else {
 	@st = stat($in{'file'});
 	print $text{'load_done'},"<p>\n";
+	&webmin_log("load", "repo", $in{'rep'}, { 'dom' => $dom->{'dom'} });
 	}
 
 &ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});

@@ -27,7 +27,7 @@ print &ui_table_row($text{'email_rep'}, "<tt>$in{'rep'}</tt>");
 
 print &ui_table_row($text{'dump_to'},
 	&ui_radio("to_def", 0,
-		[ [ 0, $text{'dump_browser'} ],
+		[ [ 0, $text{'dump_browser'}."<br>" ],
 		  [ 1, &text('dump_file', &ui_textbox("file", undef, 40).
 				&file_chooser_button("file")) ] ]));
 

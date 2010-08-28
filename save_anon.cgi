@@ -27,6 +27,7 @@ elsif ($anon && $in{'anon'}) {
 	$anon->{'perms'} = $in{'perms'};
 	}
 &save_rep_users($dom, $rep, \@users);
+&webmin_log("anon", "repo", $in{'rep'}, { 'dom' => $dom->{'dom'} });
 
 &redirect("index.cgi?show=$in{'show'}");
 

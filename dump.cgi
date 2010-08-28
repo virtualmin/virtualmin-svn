@@ -33,6 +33,7 @@ if ($in{'to_def'} == 0) {
 	print "Content-type: application/octet-stream\n\n";
 	print &read_file_contents($temp);
 	unlink($temp);
+	&webmin_log("dump", "repo", $in{'rep'}, { 'dom' => $dom->{'dom'} });
 	}
 else {
 	# To the specified file
@@ -46,8 +47,11 @@ else {
 	else {
 		@st = stat($in{'file'});
 		print &text('dump_done', &nice_size($st[7])),"<p>\n";
+		&webmin_log("dump", "repo", $in{'rep'},
+			    { 'dom' => $dom->{'dom'} });
 		}
 
-	&ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
+	&ui_print_footer("/$module_name/index.cgi?show=$in{'show'}",
+			 $text{'index_return'});
 	}
 

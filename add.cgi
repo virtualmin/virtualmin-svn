@@ -57,5 +57,6 @@ foreach $uname (@grants) {
 	}
 &save_rep_users($dom, $rep, \@repousers);
 
+&webmin_log("add", "repo", $in{'rep'}, { 'dom' => $dom->{'dom'} });
 &redirect("index.cgi?show=$in{'show'}");
 

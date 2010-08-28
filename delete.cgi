@@ -19,6 +19,8 @@ if ($button eq &entities_to_ascii($text{'delete'})) {
 	if ($in{'confirm'}) {
 		# Do it!
 		&delete_rep($dom, $rep);
+		&webmin_log("delete", "repo", $repname,
+			    { 'dom' => $dom->{'dom'} });
 		&redirect("index.cgi?show=$in{'show'}");
 		}
 	else {
@@ -61,6 +63,7 @@ elsif ($button eq &entities_to_ascii($text{'index_perms'})) {
 	&set_rep_permissions($dom, $rep);
 	print $text{'perms_done'},"<p>\n";
 
+	&webmin_log("fix", "repo", $repname, { 'dom' => $dom->{'dom'} });
 	&ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
 	}
 elsif ($button eq &entities_to_ascii($text{'index_anon'})) {
