@@ -317,6 +317,10 @@ if ($config{'auth'} eq 'Digest') {
 		$newuser->{'pass'} = "UNKNOWN";
 		}
 	}
+elsif ($user->{'pass'} =~ /^\$/ && $user->{'plainpass'}) {
+	# MD5-hashed, re-hash plain version
+	$newuser->{'pass'} = &unix_crypt($user->{'pass'}, substr(time(), -2));
+	}
 else {
 	# Just copy hashed password
 	$newuser->{'digest'} = 0;
