@@ -140,6 +140,8 @@ local $qdir = quotemeta($rep->{'dir'});
 local $webuser = &virtual_server::get_apache_user($dom);
 local @uinfo = getpwnam($webuser);
 &virtual_server::run_as_domain_user($dom, "chmod -R 770 $qdir");
+&virtual_server::run_as_domain_user($dom,
+	"find $qdir -type d | xargs chmod g+s");
 &system_logged("chown -R $uinfo[2] $qdir");
 }
 
