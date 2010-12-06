@@ -141,3 +141,4 @@ log_dump_repo=Dumped contents of repository $1 in $2
 log_load_repo=Loaded contents of repository $1 in $2
 log_anon_repo=Changed anonymous access to repository $1 in $2
 log_email_repo=Changed email notification for repository $1 in $2
+__norefs=1
