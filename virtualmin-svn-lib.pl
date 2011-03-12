@@ -321,7 +321,8 @@ if ($config{'auth'} eq 'Digest') {
 	}
 elsif ($user->{'pass'} =~ /^\$/ && $user->{'plainpass'}) {
 	# MD5-hashed, re-hash plain version
-	$newuser->{'pass'} = &unix_crypt($user->{'pass'}, substr(time(), -2));
+	$newuser->{'pass'} = &unix_crypt($user->{'plainpass'},
+					 substr(time(), -2));
 	}
 else {
 	# Just copy hashed password
