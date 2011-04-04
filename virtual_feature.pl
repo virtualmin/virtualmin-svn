@@ -134,7 +134,7 @@ else {
 
 	# Grant access to the domain's owner
 	my $uinfo;
-	if (!$d->{'parent'} &&
+	if (!$_[0]->{'parent'} &&
 	    ($uinfo = &virtual_server::get_domain_owner($_[0]))) {
 		&$virtual_server::first_print($text{'setup_svnuser'});
 		&foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
