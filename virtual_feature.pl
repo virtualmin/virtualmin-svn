@@ -213,6 +213,7 @@ if ($virt) {
 			"AuthzSVNAccessFile $conf_file",
 			"Satisfy Any",
 			@norewrite,
+			"ErrorDocument 404 default",
 		        "</Location>");
 		}
 	splice(@$lref, $virt->{'eline'}, 0, @lines);
