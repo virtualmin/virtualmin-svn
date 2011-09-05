@@ -145,8 +145,9 @@ else {
 		if ($config{'auth'} eq 'Digest') {
 			# Do Digest encryption
 			$newuser->{'digest'} = 1;
-			$newuser->{'pass'} = &htaccess_htpasswd::digest_password
-				($un, $_[0]->{'dom'}, $_[0]->{'pass'});
+			$newuser->{'pass'} = $uinfo->{'digest_enc_pass'} ||
+				&htaccess_htpasswd::digest_password
+					($un, $_[0]->{'dom'}, $_[0]->{'pass'});
 			}
 		else {
 			# Copy Unix crypted pass
@@ -240,7 +241,7 @@ if ($_[0]->{'dom'} ne $_[1]->{'dom'}) {
 	&virtual_server::release_lock_web($_[0]);
 	&$virtual_server::second_print($virtual_server::text{'setup_done'});
 	}
-if ($_[0]->{'pass'} ne $_[1]->{'pass'}) {
+if ($_[0]->{'pass_set'}) {
 	# Change password for domain admin, if he has an SVN account
 	local @users = &list_users($_[0]);
 	local ($suser) = grep { $_->{'user'} eq $_[0]->{'user'} } @users;
@@ -249,12 +250,14 @@ if ($_[0]->{'pass'} ne $_[1]->{'pass'}) {
 		&lock_file(&passwd_file($_[0]));
 		&lock_file(&conf_file($_[0]));
 		if ($config{'auth'} eq 'Digest') {
-			$suser->{'pass'} = &htaccess_htpasswd::digest_password(
-			    $_[0]->{'user'}, $_[0]->{'dom'}, $_[0]->{'pass'});
+			$suser->{'pass'} = $_[0]->{'digest_enc_pass'} ||
+			    &htaccess_htpasswd::digest_password(
+			      $_[0]->{'user'}, $_[0]->{'dom'}, $_[0]->{'pass'});
 			}
 		else {
-			$suser->{'pass'} = &htaccess_htpasswd::encrypt_password(
-			    $_[0]->{'pass'});
+			$suser->{'pass'} = $_[0]->{'crypt_enc_pass'} ||
+			    &htaccess_htpasswd::encrypt_password(
+			        $_[0]->{'pass'});
 			}
 		&virtual_server::write_as_domain_user($_[0],
 			sub { &htaccess_htpasswd::modify_user($suser) });

@@ -307,11 +307,15 @@ if ($config{'auth'} eq 'Digest') {
 	$newuser->{'digest'} = 1;
 	$newuser->{'dom'} = $dom->{'dom'};
 	if ($user->{'user'} eq $dom->{'user'}) {
-		$newuser->{'pass'} = &htaccess_htpasswd::digest_password(
+		# User is domain owner, use stored digest hash or re-hash
+		# plaintext password
+		$newuser->{'pass'} = $dom->{'digest_enc_pass'} ||
+		    &htaccess_htpasswd::digest_password(
 			$newuser->{'user'}, $dom->{'dom'}, $dom->{'pass'});
 		}
 	elsif ($user->{'passmode'} == 3 ||
 	       defined($user->{'plainpass'})) {
+		# Regular mailbox, for which password is known
 		$newuser->{'pass'} = &htaccess_htpasswd::digest_password(
 			$newuser->{'user'}, $dom->{'dom'},$user->{'plainpass'});
 		}
@@ -321,8 +325,17 @@ if ($config{'auth'} eq 'Digest') {
 	}
 elsif ($user->{'pass'} =~ /^\$/ && $user->{'plainpass'}) {
 	# MD5-hashed, re-hash plain version
-	$newuser->{'pass'} = &unix_crypt($user->{'plainpass'},
-					 substr(time(), -2));
+	if ($user->{'user'} eq $dom->{'user'}) {
+		# User is domain owner, use stored DES hash or re-hash
+		# plaintext password
+		$newuser->{'pass'} = $dom->{'crypt_enc_pass'} ||
+			&unix_crypt($dom->{'pass'}, substr(time(), -2));
+		}
+	else {
+		# Regular mailbox, for which password is known
+		$newuser->{'pass'} = &unix_crypt($user->{'plainpass'},
+						 substr(time(), -2));
+		}
 	}
 else {
 	# Just copy hashed password
