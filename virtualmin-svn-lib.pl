@@ -302,7 +302,13 @@ else {
 sub set_user_password
 {
 local ($newuser, $user, $dom) = @_;
-if ($config{'auth'} eq 'Digest') {
+if ($config{'auth'} eq 'Digest' && $user->{'pass_digest'}) {
+	# Digest mode .. use existing hashed password
+	$newuser->{'digest'} = 1;
+	$newuser->{'dom'} = $dom->{'dom'};
+	$newuser->{'pass'} = $user->{'pass_digest'};
+	}
+elsif ($config{'auth'} eq 'Digest') {
 	# Digest mode .. need to re-hash from plain pass
 	$newuser->{'digest'} = 1;
 	$newuser->{'dom'} = $dom->{'dom'};
@@ -322,6 +328,10 @@ if ($config{'auth'} eq 'Digest') {
 	else {
 		$newuser->{'pass'} = "UNKNOWN";
 		}
+	}
+elsif ($user->{'pass_crypt'}) {
+	# Use stored crypt format hash
+	$newuser->{'pass'} = $user->{'pass_crypt'};
 	}
 elsif ($user->{'pass'} =~ /^\$/ && $user->{'plainpass'}) {
 	# MD5-hashed, re-hash plain version

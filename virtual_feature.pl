@@ -658,11 +658,13 @@ elsif ($in->{$input_name} && $suser) {
 	$suser->{'user'} = $un;
 	if ($user->{'passmode'} == 3) {
 		if ($config{'auth'} eq 'Digest') {
-			$suser->{'pass'} = &htaccess_htpasswd::digest_password(
+			$suser->{'pass'} = $user->{'pass_digest'} ||
+			    &htaccess_htpasswd::digest_password(
 				$un, $dom->{'dom'}, $user->{'plainpass'});
 			}
 		else {
-			$suser->{'pass'} = $user->{'pass'};
+			$suser->{'pass'} = $user->{'pass_crypt'} ||
+					   $user->{'pass'};
 			}
 		}
 	&virtual_server::write_as_domain_user($dom,
@@ -732,11 +734,13 @@ if ($un ne $oun && $suser) {
 if ($user->{'passmode'} == 3) {
 	# Password was changed
 	if ($config{'auth'} eq 'Digest') {
-		$suser->{'pass'} = &htaccess_htpasswd::digest_password(
+		$suser->{'pass'} = $user->{'pass_digest'} ||
+		    &htaccess_htpasswd::digest_password(
 			$un, $dom->{'dom'}, $user->{'plainpass'});
 		}
 	else {
-		$suser->{'pass'} = &htaccess_htpasswd::encrypt_password(
+		$suser->{'pass'} = $user->{'pass_crypt'} ||
+		    &htaccess_htpasswd::encrypt_password(
 			$user->{'plainpass'});
 		}
 	&virtual_server::write_as_domain_user($dom,
