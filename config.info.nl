@@ -1,5 +1,5 @@
 svnadmin=Volledig pad naar de svnadmin opdracht,0
-auth=Identificatie type,1,Basic-Basic,Digest-Digest
+auth=Authenticatie type,1,Basic-Basic,Digest-Digest
 passfile=Wachtwoord file onder de home directory,3,Standaard (<tt>etc/svn.basic.passwd</tt>)
 auto=Toevoegen van autoversie richtlijnen?,1,1-Ja,0-Nee
 canfs=Selectie toestaan van repository filesysteem type?,1,1-Ja,0-Nee
