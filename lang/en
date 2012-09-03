@@ -2,6 +2,7 @@ feat_name=Subversion repositories
 feat_losing=Subversion access via the website will be disabled
 feat_disname=subversion repositories
 feat_label=Allow Subversion repositories?
+feat_label2=Subversion repositories
 feat_edepweb=Subversion cannot be enabled unless a website is
 feat_echeck=The Subversion administration command $1 is not installed
 feat_edigest=Digest authentication is enabled, but the $1 command is not installed.
