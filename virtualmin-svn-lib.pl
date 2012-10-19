@@ -285,6 +285,9 @@ return $out =~ /failed|error/i || !-r $file || $? ?
 sub load_rep
 {
 local ($dom, $rep, $file) = @_;
+local $qdir = quotemeta($rep->{'dir'});
+local $quser = quotemeta($dom->{'user'});
+&system_logged("chown -R $quser:$quser $qdir");
 local $cmd = "svnadmin load -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
 	     " 2>&1 <".quotemeta($file);
 local $out = &virtual_server::run_as_domain_user($dom, $cmd);
