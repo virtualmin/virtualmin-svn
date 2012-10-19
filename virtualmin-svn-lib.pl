@@ -150,6 +150,9 @@ local @uinfo = getpwnam($webuser);
 sub delete_rep
 {
 local ($dom, $rep) = @_;
+local $qdir = quotemeta($rep->{'dir'});
+local $quser = quotemeta($dom->{'user'});
+&system_logged("chown -R $quser:$quser $qdir");
 &virtual_server::unlink_file_as_domain_user(
 	$dom, "$dom->{'home'}/svn/$rep->{'rep'}");
 local $cfile = &conf_file($dom);
