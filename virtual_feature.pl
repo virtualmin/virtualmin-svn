@@ -602,7 +602,9 @@ if ($in->{$input_name}) {
 		}
 
         # Make sure a password is given if needed
-        if ($user->{'passmode'} != 3 && !$suser &&
+        if (!defined($user->{'plainpass'}) &&
+            !$user->{'pass_digest'} &&
+	    !$suser &&
             $user->{'user'} ne $dom->{'user'} &&
             $config{'auth'} eq 'Digest') {
                 return $text{'mail_pass'};
