@@ -18,6 +18,7 @@ feat_restore=Restoring Subversion repositories and configuration files ..
 feat_evalidatefile=SVN users file $1 does not exist
 feat_evalidateconf=SVN configuration file $1 does not exist
 feat_evalidateloc=Missing SVN Location from Apache configuration
+feat_module=Virtualmin Subversion Repositories (for managing SVN)
 
 setup_dav=Adding Subversion directives to website configuration ..
 setup_svnuser=Adding Subversion account for server administrator

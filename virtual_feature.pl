@@ -410,6 +410,11 @@ return ( { 'mod' => $module_name,
           } );
 }
 
+sub feature_modules
+{
+return ( [ $module_name, $text{'feat_module'} ] );
+}
+
 # feature_backup(&domain, file, &opts, &all-opts)
 # Copy the SVN password file, config file and repositories for the domain
 sub feature_backup
