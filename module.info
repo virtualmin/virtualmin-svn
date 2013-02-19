@@ -5,3 +5,4 @@ version=4.9
 readonly=1
 desc_nl=Virtualmin Subversie Repositories
 feedback=jcameron@webmin.com
+desc_no=Virtualmin Subversion depoter

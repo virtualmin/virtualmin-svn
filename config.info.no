@@ -1,0 +1,8 @@
+svnadmin=Full sti til svnadmin kommando,0
+auth=Autentiseringstype,1,Basic-Grunnleggende,Digest-Digest
+passfile=Passordfil under hjemmekatalog,3,Standard (<tt>etc/svn.basic.passwd</tt>)
+auto=Legg ti lAutoversioning direktiv?,1,1-Ja,0-Nei
+canfs=Tillat valg av filsystemtype for depot?,1,1-Ja,0-Nei
+cannotify=Tillat post-commit e-post beskjeder?,1,1-Ja,0-Nei
+candump=Tillat dumping av SVN depoter?1,1-Ja,0-Nei
+canload=Tillat lasting av SVN depoter?,1,1-Ja,0-Nei
