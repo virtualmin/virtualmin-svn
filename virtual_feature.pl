@@ -424,12 +424,15 @@ local ($d, $file, $opts) = @_;
 
 # Copy actual repositories
 local $tar = &virtual_server::get_tar_command();
+local $temp = &transname();
 local $out = &backquote_command("cd ".quotemeta("$d->{'home'}/svn")." && ".
-				"$tar cf ".quotemeta($file)." . 2>&1");
+				"$tar cf ".quotemeta($temp)." . 2>&1");
 if ($?) {
 	&$virtual_server::second_print(&text('feat_tar', "<pre>$out</pre>"));
 	return 0;
 	}
+&virtual_server::copy_write_as_domain_user($d, $temp, $file);
+&unlink_file($temp);
 
 # Copy users file
 local $pfile = &passwd_file($_[0]);
@@ -437,7 +440,7 @@ if (!-r $pfile) {
 	&$virtual_server::second_print($text{'feat_nopfile'});
 	return 0;
 	}
-&copy_source_dest($pfile, $file."_users");
+&virtual_server::copy_write_as_domain_user($d, $pfile, $file."_users");
 
 # Copy config file
 local $cfile = &conf_file($_[0]);
@@ -445,7 +448,7 @@ if (!-r $cfile) {
 	&$virtual_server::second_print($text{'feat_nopfile'});
 	return 0;
 	}
-&copy_source_dest($cfile, $file."_config");
+&virtual_server::copy_write_as_domain_user($d, $cfile, $file."_config");
 
 &$virtual_server::second_print($virtual_server::text{'setup_done'});
 return 1;
