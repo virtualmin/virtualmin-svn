@@ -1,3 +1,7 @@
+use strict;
+use warnings;
+our (%access, %config);
+our $module_root_directory;
 
 BEGIN { push(@INC, ".."); };
 eval "use WebminCore;";
@@ -15,7 +19,7 @@ return &virtual_server::can_edit_domain($_[0]);
 # Returns a list of all repositories in some domain
 sub list_reps
 {
-local (@rv, $f);
+my (@rv, $f);
 opendir(DIR, "$_[0]->{'home'}/svn");
 while($f = readdir(DIR)) {
 	if ($f ne "." && $f ne "..") {
@@ -39,10 +43,10 @@ return undef;
 # Returns a list of all users with access to some repository
 sub list_rep_users
 {
-local $lref = &virtual_server::read_file_lines_as_domain_user(
+my $lref = &virtual_server::read_file_lines_as_domain_user(
 		$_[0], &conf_file($_[0]));
-local (@rv, $inrep, $l);
-foreach $l (@$lref) {
+my (@rv, $inrep, $l);
+foreach my $l (@$lref) {
 	if ($l =~ /^\s*\[(.*):\/\S*\]/) {
 		$inrep = $1;
 		}
@@ -58,12 +62,12 @@ return @rv;
 # Updates the list of users for some repository
 sub save_rep_users
 {
-local ($dom, $rep, $users) = @_;
-local $conf_file = &conf_file($_[0]);
+my ($dom, $rep, $users) = @_;
+my $conf_file = &conf_file($_[0]);
 &lock_file($conf_file);
-local $lref = &virtual_server::read_file_lines_as_domain_user($dom, $conf_file);
-local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
-local @lines = ( "[$rep->{'rep'}:/]",
+my $lref = &virtual_server::read_file_lines_as_domain_user($dom, $conf_file);
+my ($start, $end) = &rep_users_lines($dom, $rep, $lref);
+my @lines = ( "[$rep->{'rep'}:/]",
 		 map { "$_->{'user'} = $_->{'perms'}" } @$users );
 if (defined($start)) {
 	splice(@$lref, $start, $end-$start+1, @lines);
@@ -79,10 +83,10 @@ else {
 # rep_users_lines(&domain, &rep, &lref)
 sub rep_users_lines
 {
-local ($dom, $rep, $lref) = @_;
-local ($start, $end, $l, $inrep);
-local $lnum = 0;
-foreach $l (@$lref) {
+my ($dom, $rep, $lref) = @_;
+my ($start, $end, $l, $inrep);
+my $lnum = 0;
+foreach my $l (@$lref) {
 	if ($l =~ /^\s*\[(.*):\/\S*\]/) {
 		if ($1 eq $rep->{'rep'}) {
 			$start = $end = $lnum;
@@ -104,26 +108,26 @@ return ($start, $end);
 # Create a repository directory and perms file entry
 sub create_rep
 {
-local ($dom, $rep, $type) = @_;
+my ($dom, $rep, $type) = @_;
 $rep->{'dir'} = "$dom->{'home'}/svn/$rep->{'rep'}";
-local $qdir = quotemeta($rep->{'dir'});
-local $cmd;
+my $qdir = quotemeta($rep->{'dir'});
+my $cmd;
 if (&supports_fs_type()) {
 	$cmd = "svnadmin create --fs-type $type $qdir 2>&1";
 	}
 else {
 	$cmd = "svnadmin create $qdir 2>&1";
 	}
-local ($out, $ex) = &virtual_server::run_as_domain_user($dom, $cmd);
+my ($out, $ex) = &virtual_server::run_as_domain_user($dom, $cmd);
 if ($ex) {
 	return $out;
 	}
 &set_rep_permissions($dom, $rep);
 
-local $cfile = &conf_file($dom);
+my $cfile = &conf_file($dom);
 &lock_file($cfile);
-local $lref = &virtual_server::read_file_lines_as_domain_user($dom, $cfile);
-local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
+my $lref = &virtual_server::read_file_lines_as_domain_user($dom, $cfile);
+my ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 if (!defined($start)) {
 	push(@$lref, "[$rep->{'rep'}:/]");
 	&virtual_server::flush_file_lines_as_domain_user($dom, $cfile);
@@ -135,10 +139,10 @@ if (!defined($start)) {
 # Sets the ownership and permissions on a repository
 sub set_rep_permissions
 {
-local ($dom, $rep) = @_;
-local $qdir = quotemeta($rep->{'dir'});
-local $webuser = &virtual_server::get_apache_user($dom);
-local @uinfo = getpwnam($webuser);
+my ($dom, $rep) = @_;
+my $qdir = quotemeta($rep->{'dir'});
+my $webuser = &virtual_server::get_apache_user($dom);
+my @uinfo = getpwnam($webuser);
 &virtual_server::run_as_domain_user($dom, "chmod -R 770 $qdir");
 &virtual_server::run_as_domain_user($dom,
 	"find $qdir -type d | xargs chmod g+s");
@@ -149,16 +153,16 @@ local @uinfo = getpwnam($webuser);
 # Delete a repository directory and perms file entry
 sub delete_rep
 {
-local ($dom, $rep) = @_;
-local $qdir = quotemeta($rep->{'dir'});
-local $quser = quotemeta($dom->{'user'});
+my ($dom, $rep) = @_;
+my $qdir = quotemeta($rep->{'dir'});
+my $quser = quotemeta($dom->{'user'});
 &system_logged("chown -R $quser:$quser $qdir");
 &virtual_server::unlink_file_as_domain_user(
 	$dom, "$dom->{'home'}/svn/$rep->{'rep'}");
-local $cfile = &conf_file($dom);
+my $cfile = &conf_file($dom);
 &lock_file($cfile);
-local $lref = &virtual_server::read_file_lines_as_domain_user($dom, $cfile);
-local ($start, $end) = &rep_users_lines($dom, $rep, $lref);
+my $lref = &virtual_server::read_file_lines_as_domain_user($dom, $cfile);
+my ($start, $end) = &rep_users_lines($dom, $rep, $lref);
 if (defined($start)) {
 	splice(@$lref, $start, $end-$start+1);
 	&virtual_server::flush_file_lines_as_domain_user($dom, $cfile);
@@ -168,7 +172,7 @@ if (defined($start)) {
 
 sub supports_fs_type
 {
-local $out = &backquote_command("$config{'svnadmin'} help create 2>&1", 1);
+my $out = &backquote_command("$config{'svnadmin'} help create 2>&1", 1);
 return $config{'canfs'} && $out =~ /\-\-fs\-type/;
 }
 
@@ -191,7 +195,7 @@ return "$_[0]->{'home'}/etc/svn-access.conf";
 # list_users(&domain)
 sub list_users
 {
-local $users;
+my $users;
 &foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
 if ($config{'auth'} eq 'Digest') {
 	$users = &htaccess_htpasswd::list_digest_users(&passwd_file($_[0]));
@@ -206,10 +210,10 @@ return @$users;
 # Returns the email address to notify when changes to some repo are committed
 sub get_repository_email
 {
-local ($dom, $rep) = @_;
-local $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
-local $lref = &read_file_lines($pc);
-local ($prog, $email);
+my ($dom, $rep) = @_;
+my $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
+my $lref = &read_file_lines($pc);
+my ($prog, $email);
 foreach my $l (@$lref) {
 	if ($l =~ /^\s*EMAIL="(.*)"/) {
 		$email = $1;
@@ -226,11 +230,11 @@ return $prog && $email ? $email : undef;
 # Updates the email address to notify when changes to some repo are committed
 sub save_repository_email
 {
-local ($dom, $rep, $email) = @_;
-local $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
+my ($dom, $rep, $email) = @_;
+my $pc = "$dom->{'home'}/svn/$rep->{'rep'}/hooks/post-commit";
 &lock_file($pc);
-local $lref = &virtual_server::read_file_lines_as_domain_user($dom, $pc);
-local $svnlook = &has_command("svnlook");
+my $lref = &virtual_server::read_file_lines_as_domain_user($dom, $pc);
+my $svnlook = &has_command("svnlook");
 if (!@$lref && $email) {
 	# Create initial file
 	$svnlook || &error("Could not find the svnlook command");
@@ -275,10 +279,10 @@ elsif (@$lref && !$email) {
 # Dumps the contents of a repository to a file
 sub dump_rep
 {
-local ($dom, $rep, $file) = @_;
-local $cmd = "svnadmin dump -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
+my ($dom, $rep, $file) = @_;
+my $cmd = "svnadmin dump -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
 	     " 2>&1 >".quotemeta($file);
-local $out = &virtual_server::run_as_domain_user($dom, $cmd);
+my $out = &virtual_server::run_as_domain_user($dom, $cmd);
 return $out =~ /failed|error/i || !-r $file || $? ?
 	"<pre>".&html_escape($out)."</pre>" : undef;
 }
@@ -287,13 +291,13 @@ return $out =~ /failed|error/i || !-r $file || $? ?
 # Loads the contents of a repository from a file
 sub load_rep
 {
-local ($dom, $rep, $file) = @_;
-local $qdir = quotemeta($rep->{'dir'});
-local $quser = quotemeta($dom->{'user'});
+my ($dom, $rep, $file) = @_;
+my $qdir = quotemeta($rep->{'dir'});
+my $quser = quotemeta($dom->{'user'});
 &system_logged("chown -R $quser:$quser $qdir");
-local $cmd = "svnadmin load -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
+my $cmd = "svnadmin load -q ".quotemeta("$dom->{'home'}/svn/$rep->{'rep'}").
 	     " 2>&1 <".quotemeta($file);
-local $out = &virtual_server::run_as_domain_user($dom, $cmd);
+my $out = &virtual_server::run_as_domain_user($dom, $cmd);
 if ($out =~ /failed|error/i || $?) {
 	return "<pre>".&html_escape($out)."</pre>";
 	}
@@ -307,7 +311,7 @@ else {
 # Sets password fields for an SVN user based on their virtualmin user hash
 sub set_user_password
 {
-local ($newuser, $user, $dom) = @_;
+my ($newuser, $user, $dom) = @_;
 if ($config{'auth'} eq 'Digest' && $user->{'pass_digest'}) {
 	# Digest mode .. use existing hashed password
 	$newuser->{'digest'} = 1;
@@ -361,4 +365,3 @@ else {
 }
 
 1;
-

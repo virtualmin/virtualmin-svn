@@ -1,5 +1,8 @@
 #!/usr/local/bin/perl
 # Save the email settings for a repository
+use strict;
+use warnings;
+our (%text, %in, %config);
 
 require './virtualmin-svn-lib.pl';
 &ReadParse();
@@ -7,10 +10,10 @@ require './virtualmin-svn-lib.pl';
 $config{'cannotify'} || &error($text{'email_ecannot'});
 
 # Get the domain and repository
-$dom = &virtual_server::get_domain($in{'dom'});
+my $dom = &virtual_server::get_domain($in{'dom'});
 &can_edit_domain($dom) || &error($text{'add_edom'});
-@reps = &list_reps($dom);
-($rep) = grep { $_->{'rep'} eq $in{'rep'} } @reps;
+my @reps = &list_reps($dom);
+my ($rep) = grep { $_->{'rep'} eq $in{'rep'} } @reps;
 $rep || &error($text{'delete_erep'});
 
 # Save settings
@@ -19,4 +22,3 @@ $in{'email_def'} || $in{'email'} =~ /\S/ || &error($text{'email_eemail'});
 
 &webmin_log("email", "repo", $in{'rep'}, { 'dom' => $dom->{'dom'} });
 &redirect("index.cgi?show=$in{'show'}");
-

@@ -1,7 +1,12 @@
 # Defines functions for this feature
+use strict;
+use warnings;
+our (%text, %in, %config);
+our $module_name;
+our $module_config_directory;
 
 do 'virtualmin-svn-lib.pl';
-$input_name = $module_name;
+my $input_name = $module_name;
 $input_name =~ s/[^A-Za-z0-9]/_/g;
 &load_theme_library();
 
@@ -31,7 +36,7 @@ return $text{'feat_disname'};
 # editing form
 sub feature_label
 {
-local ($edit) = @_;
+my ($edit) = @_;
 return $edit ? $text{'feat_label2'} : $text{'feat_label'};
 }
 
@@ -45,7 +50,7 @@ return "label";
 # or an error message if not
 sub feature_check
 {
-local $err = &svn_check();
+my $err = &svn_check();
 if (!$err) {
 	# Check for htdigest command
 	if ($config{'auth'} eq 'Digest') {
@@ -88,7 +93,7 @@ sub feature_setup
 {
 &$virtual_server::first_print($text{'setup_dav'});
 &virtual_server::obtain_lock_web($_[0]);
-local $any;
+my $any;
 $any++ if (&add_svn_directives($_[0], $_[0]->{'web_port'}));
 $any++ if ($_[0]->{'ssl'} &&
            &add_svn_directives($_[0], $_[0]->{'web_sslport'}));
@@ -98,8 +103,8 @@ if (!$any) {
 	}
 else {
 	# Create needed directories ~/etc/ and ~/svn
-	local $passwd_file = &passwd_file($_[0]);
-	local $conf_file = &conf_file($_[0]);
+	my $passwd_file = &passwd_file($_[0]);
+	my $conf_file = &conf_file($_[0]);
 	if (!-d "$_[0]->{'home'}/svn") {
 		&virtual_server::make_dir_as_domain_user(
 			$_[0], "$_[0]->{'home'}/svn", 02755);
@@ -139,9 +144,9 @@ else {
 	    ($uinfo = &virtual_server::get_domain_owner($_[0]))) {
 		&$virtual_server::first_print($text{'setup_svnuser'});
 		&foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
-		local $un = &virtual_server::remove_userdom(
+		my $un = &virtual_server::remove_userdom(
 			$uinfo->{'user'}, $_[0]);
-		local $newuser = { 'user' => $un,
+		my $newuser = { 'user' => $un,
 				   'enabled' => 1 };
 		if ($config{'auth'} eq 'Digest') {
 			# Do Digest encryption
@@ -164,7 +169,7 @@ else {
 
 # Set default limit from template
 if (!exists($_[0]->{$module_name."limit"})) {
-        local $tmpl = &virtual_server::get_template($_[0]->{'template'});
+        my $tmpl = &virtual_server::get_template($_[0]->{'template'});
         $_[0]->{$module_name."limit"} =
                 $tmpl->{$module_name."limit"} eq "none" ? "" :
                  $tmpl->{$module_name."limit"};
@@ -181,23 +186,23 @@ if (defined(&virtual_server::setup_noproxy_path)) {
 
 sub add_svn_directives
 {
-local ($d, $port) = @_;
-local ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
+my ($d, $port) = @_;
+my ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
 if ($virt) {
-	local $lref = &read_file_lines($virt->{'file'});
-	local ($locstart, $locend) =
+	my $lref = &read_file_lines($virt->{'file'});
+	my ($locstart, $locend) =
 		&find_svn_lines($lref, $virt->{'line'}, $virt->{'eline'});
-	local @lines;
-	local $passwd_file = &passwd_file($d);
-	local $conf_file = &conf_file($d);
-	local $at = $config{'auth'};
-	local $auf = $at eq "Digest" && $apache::httpd_modules{'core'} < 2.2 ?
+	my @lines;
+	my $passwd_file = &passwd_file($d);
+	my $conf_file = &conf_file($d);
+	my $at = $config{'auth'};
+	my $auf = $at eq "Digest" && $apache::httpd_modules{'core'} < 2.2 ?
 			"AuthDigestFile" : "AuthUserFile";
-	local @adp = $at eq "Digest" && $apache::httpd_modules{'core'} >= 2.2 ?
+	my @adp = $at eq "Digest" && $apache::httpd_modules{'core'} >= 2.2 ?
 			("AuthDigestProvider file") : ( );
-	local @auto;
+	my @auto;
 	@auto = ( "SVNAutoversioning on") if ($config{'auto'});
-	local @norewrite;
+	my @norewrite;
 	if ($apache::httpd_modules{'mod_rewrite'}) {
 		@norewrite = ( "RewriteEngine off" );
 		}
@@ -244,8 +249,8 @@ if ($_[0]->{'dom'} ne $_[1]->{'dom'}) {
 	}
 if ($_[0]->{'pass_set'}) {
 	# Change password for domain admin, if he has an SVN account
-	local @users = &list_users($_[0]);
-	local ($suser) = grep { $_->{'user'} eq $_[0]->{'user'} } @users;
+	my @users = &list_users($_[0]);
+	my ($suser) = grep { $_->{'user'} eq $_[0]->{'user'} } @users;
 	if ($suser) {
 		&$virtual_server::first_print($text{'save_davpass'});
 		&lock_file(&passwd_file($_[0]));
@@ -272,14 +277,14 @@ if ($_[0]->{'pass_set'}) {
 
 sub change_svn_directives
 {
-local ($d, $port) = @_;
-local $conf = &apache::get_config();
-local ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
+my ($d, $port) = @_;
+my $conf = &apache::get_config();
+my ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
 return 0 if (!$virt);
-local @locs = &apache::find_directive_struct("Location", $vconf);
-local ($davloc) = grep { $_->{'words'}->[0] eq "/svn" } @locs;
+my @locs = &apache::find_directive_struct("Location", $vconf);
+my ($davloc) = grep { $_->{'words'}->[0] eq "/svn" } @locs;
 if ($davloc) {
-        local $auth = &apache::find_directive_struct(
+        my $auth = &apache::find_directive_struct(
                 "AuthName", $davloc->{'members'});
         if ($auth) {
                 &apache::save_directive("AuthName", [ $d->{'dom'} ],
@@ -297,7 +302,7 @@ sub feature_delete
 {
 &$virtual_server::first_print($text{'delete_dav'});
 &virtual_server::obtain_lock_web($_[0]);
-local $any;
+my $any;
 $any++ if (&remove_svn_directives($_[0], $_[0]->{'web_port'}));
 $any++ if ($_[0]->{'ssl'} &&
            &remove_svn_directives($_[0], $_[0]->{'web_sslport'}));
@@ -320,11 +325,11 @@ else {
 
 sub remove_svn_directives
 {
-local ($d, $port) = @_;
-local ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
+my ($d, $port) = @_;
+my ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
 if ($virt) {
-        local $lref = &read_file_lines($virt->{'file'});
-        local ($locstart, $locend) =
+        my $lref = &read_file_lines($virt->{'file'});
+        my ($locstart, $locend) =
                 &find_svn_lines($lref, $virt->{'line'}, $virt->{'eline'});
         if ($locstart) {
                 splice(@$lref, $locstart, $locend-$locstart+1);
@@ -341,7 +346,7 @@ else {
 # find_svn_lines(&lref, start, end)
 sub find_svn_lines
 {
-local ($locstart, $locend, $i);
+my ($locstart, $locend, $i);
 for($i=$_[1]; $i<=$_[2]; $i++) {
 	if ($_[0]->[$i] =~ /^\s*<Location\s+\/svn>/i && !$locstart) {
 		$locstart = $i;
@@ -358,7 +363,7 @@ return ($locstart, $locend);
 # the Webmin user when this feature is enabled
 sub feature_webmin
 {
-local @doms = map { $_->{'dom'} } grep { $_->{$module_name} } @{$_[1]};
+my @doms = map { $_->{'dom'} } grep { $_->{$module_name} } @{$_[1]};
 if (@doms) {
 	return ( [ $module_name,
 		   { 'dom' => join(" ", @doms),
@@ -374,7 +379,7 @@ else {
 # Returns HTML for editing limits related to this plugin
 sub feature_limits_input
 {
-local ($d) = @_;
+my ($d) = @_;
 return undef if (!$d->{$module_name});
 return &ui_table_row(&hlink($text{'limits_max'}, "limits_max"),
 	&ui_opt_textbox($input_name."limit", $d->{$module_name."limit"},
@@ -386,7 +391,7 @@ return &ui_table_row(&hlink($text{'limits_max'}, "limits_max"),
 # Updates the domain with limit inputs generated by feature_limits_input
 sub feature_limits_parse
 {
-local ($d, $in) = @_;
+my ($d, $in) = @_;
 return undef if (!$d->{$module_name});
 if ($in->{$input_name."limit_def"}) {
 	delete($d->{$module_name."limit"});
@@ -402,7 +407,7 @@ return undef;
 # Returns an array of link objects for webmin modules for this feature
 sub feature_links
 {
-local ($d) = @_;
+my ($d) = @_;
 return ( { 'mod' => $module_name,
 	   'desc' => $text{'links_link'},
 	   'page' => 'index.cgi?show='.$d->{'dom'},
@@ -419,13 +424,13 @@ return ( [ $module_name, $text{'feat_module'} ] );
 # Copy the SVN password file, config file and repositories for the domain
 sub feature_backup
 {
-local ($d, $file, $opts) = @_;
+my ($d, $file, $opts) = @_;
 &$virtual_server::first_print($text{'feat_backup'});
 
 # Copy actual repositories
-local $tar = &virtual_server::get_tar_command();
-local $temp = &transname();
-local $out = &backquote_command("cd ".quotemeta("$d->{'home'}/svn")." && ".
+my $tar = &virtual_server::get_tar_command();
+my $temp = &transname();
+my $out = &backquote_command("cd ".quotemeta("$d->{'home'}/svn")." && ".
 				"$tar cf ".quotemeta($temp)." . 2>&1");
 if ($?) {
 	&$virtual_server::second_print(&text('feat_tar', "<pre>$out</pre>"));
@@ -435,7 +440,7 @@ if ($?) {
 &unlink_file($temp);
 
 # Copy users file
-local $pfile = &passwd_file($_[0]);
+my $pfile = &passwd_file($_[0]);
 if (!-r $pfile) {
 	&$virtual_server::second_print($text{'feat_nopfile'});
 	return 0;
@@ -443,7 +448,7 @@ if (!-r $pfile) {
 &virtual_server::copy_write_as_domain_user($d, $pfile, $file."_users");
 
 # Copy config file
-local $cfile = &conf_file($_[0]);
+my $cfile = &conf_file($_[0]);
 if (!-r $cfile) {
 	&$virtual_server::second_print($text{'feat_nopfile'});
 	return 0;
@@ -458,13 +463,13 @@ return 1;
 # Called to restore this feature for the domain from the given file
 sub feature_restore
 {
-local ($d, $file, $opts) = @_;
+my ($d, $file, $opts) = @_;
 &$virtual_server::first_print($text{'feat_restore'});
 
 # Extract tar file of repositories (deleting old ones first)
-local $tar = &virtual_server::get_tar_command();
+my $tar = &virtual_server::get_tar_command();
 &execute_command("rm -rf ".quotemeta("$d->{'home'}/svn")."/*");
-local ($out, $ex) = &virtual_server::run_as_domain_user($d,
+my ($out, $ex) = &virtual_server::run_as_domain_user($d,
 	"cd ".quotemeta("$d->{'home'}/svn")." && $tar xf ".quotemeta($file)." 2>&1");
 if ($ex) {
 	&$virtual_server::second_print(&text('feat_untar', "<pre>$out</pre>"));
@@ -472,8 +477,8 @@ if ($ex) {
 	}
 
 # Copy users file
-local $pfile = &passwd_file($d);
-local ($ok, $out) = &virtual_server::copy_source_dest_as_domain_user(
+my $pfile = &passwd_file($d);
+(my $ok, $out) = &virtual_server::copy_source_dest_as_domain_user(
     		$d, $file."_users", $pfile);
 if (!$ok) {
 	&$virtual_server::second_print(&text('feat_copypfile2', $out));
@@ -481,7 +486,7 @@ if (!$ok) {
 	}
 
 # Copy config file
-local $cfile = &conf_file($d);
+my $cfile = &conf_file($d);
 ($ok, $out) = &virtual_server::copy_source_dest_as_domain_user(
 		$d, $file."_config", $cfile);
 if (!$ok) {
@@ -491,7 +496,7 @@ if (!$ok) {
 
 # Fix repo permissions
 foreach my $rep (&list_reps($d)) {
-	&set_rep_permissions($dom, $rep);
+	&set_rep_permissions($d, $rep);
 	}
 
 &$virtual_server::second_print($virtual_server::text{'setup_done'});
@@ -508,15 +513,15 @@ return $text{'feat_backup_name'};
 # an error message if any problem is found
 sub feature_validate
 {
-local ($d) = @_;
-local $passwd_file = &passwd_file($d);
+my ($d) = @_;
+my $passwd_file = &passwd_file($d);
 -r $passwd_file || return &text('feat_evalidatefile', "<tt>$passwd_file</tt>");
-local $conf_file = &conf_file($d);
+my $conf_file = &conf_file($d);
 -r $conf_file || return &text('feat_evalidateconf', "<tt>$conf_file</tt>");
-local ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'}, $port);
+my ($virt, $vconf) = &virtual_server::get_apache_virtual($d->{'dom'});
 $virt || return &virtual_server::text('validate_eweb', $d->{'dom'});
-local $lref = &read_file_lines($virt->{'file'});
-local ($locstart, $locend) =
+my $lref = &read_file_lines($virt->{'file'});
+my ($locstart, $locend) =
         &find_svn_lines($lref, $virt->{'line'}, $virt->{'eline'});
 $locstart || return &text('feat_evalidateloc');
 return undef;
@@ -527,20 +532,20 @@ return undef;
 # formatted to appear inside a table.
 sub mailbox_inputs
 {
-local ($user, $new, $dom) = @_;
+my ($user, $new, $dom) = @_;
 return undef if (!$dom || !$dom->{$module_name});
-local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
-local $suser;
+my $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
+my $suser;
 if (!$new) {
-	local @users = &list_users($dom);
+	my @users = &list_users($dom);
 	($suser) = grep { $_->{'user'} eq $un } @users;
 	}
-local $main::ui_table_cols = 2;
-local @reps = &list_reps($dom);
-local (@rwreps, @roreps);
-foreach $r (@reps) {
-	local @rusers = &list_rep_users($dom, $r->{'rep'});
-	local ($ruser) = grep { $_->{'user'} eq $un } @rusers;
+$main::ui_table_cols = 2;
+my @reps = &list_reps($dom);
+my (@rwreps, @roreps);
+foreach my $r (@reps) {
+	my @rusers = &list_rep_users($dom, $r->{'rep'});
+	my ($ruser) = grep { $_->{'user'} eq $un } @rusers;
 	if ($ruser && $ruser->{'perms'} eq 'rw') {
 		push(@rwreps, $r->{'rep'});
 		}
@@ -548,7 +553,7 @@ foreach $r (@reps) {
 		push(@roreps, $r->{'rep'});
 		}
 	}
-local %defs;
+my %defs;
 &read_file("$module_config_directory/defaults.$dom->{'id'}", \%defs);
 if (!$suser && !@rwreps) {
 	# Use default repositories
@@ -557,19 +562,19 @@ if (!$suser && !@rwreps) {
 @rwreps = sort { $a cmp $b } @rwreps;
 @roreps = sort { $a cmp $b } @roreps;
 @reps = sort { $a->{'rep'} cmp $b->{'rep'} } @reps;
-local @inputs = ( $input_name."_rwreps_opts", $input_name."_rwreps_vals",
+my @inputs = ( $input_name."_rwreps_opts", $input_name."_rwreps_vals",
 		  $input_name."_rwreps_add", $input_name."_rwreps_remove",
 		  $input_name."_roreps_opts", $input_name."_roreps_vals",
 		  $input_name."_roreps_add", $input_name."_roreps_remove", );
-local $hasuser = $suser || $new && $defs{'svn'};
-local $dis = $hasuser ? 0 : 1;
+my $hasuser = $suser || $new && $defs{'svn'};
+my $dis = $hasuser ? 0 : 1;
 if (&get_webmin_version() < 1.501) {
 	# Only Webmin 1.501 and later support disabling multi-select properly
 	$dis = 0;
 	@inputs = ( );
 	}
-local $jsenable = &js_disable_inputs([ ], \@inputs, "onClick");
-local $jsdisable = &js_disable_inputs(\@inputs, [ ], "onClick");
+my $jsenable = &js_disable_inputs([ ], \@inputs, "onClick");
+my $jsdisable = &js_disable_inputs(\@inputs, [ ], "onClick");
 return &ui_table_row(&hlink($text{'mail_svn'}, "svn"),
 		     &ui_radio($input_name, $hasuser ? 1 : 0,
 			       [ [ 1, $text{'yes'}, $jsenable ],
@@ -595,17 +600,17 @@ return &ui_table_row(&hlink($text{'mail_svn'}, "svn"),
 # success or an error message
 sub mailbox_validate
 {
-local ($user, $olduser, $in, $new, $dom) = @_;
+my ($user, $olduser, $in, $new, $dom) = @_;
 return undef if (!$dom || !$dom->{$module_name});
 if ($in->{$input_name}) {
-	local @users = &list_users($dom);
-	local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
-	local $oun = &virtual_server::remove_userdom($olduser->{'user'}, $dom);
-	local ($suser) = grep { $_->{'user'} eq $oun } @users;
+	my @users = &list_users($dom);
+	my $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
+	my $oun = &virtual_server::remove_userdom($olduser->{'user'}, $dom);
+	my ($suser) = grep { $_->{'user'} eq $oun } @users;
 
 	# Make sure SVN user doesn't clash
 	if ($new || $user->{'user'} ne $olduser->{'user'}) {
-		local ($clash) = grep { $_->{'user'} eq $un } @users;
+		my ($clash) = grep { $_->{'user'} eq $un } @users;
 		return &text('mail_clash', $un) if ($clash);
 		}
 
@@ -619,8 +624,8 @@ if ($in->{$input_name}) {
                 }
 
 	# Make sure rw and ro repos don't clash
-	local @rwreps = split(/\r?\n/, $in->{$input_name."_rwreps"});
-	local @roreps = split(/\r?\n/, $in->{$input_name."_roreps"});
+	my @rwreps = split(/\r?\n/, $in->{$input_name."_rwreps"});
+	my @roreps = split(/\r?\n/, $in->{$input_name."_roreps"});
 	foreach my $r (@rwreps) {
 		&indexof($r, @roreps) < 0 || return &text('mail_repoclash', $r);
 		}
@@ -632,14 +637,14 @@ return undef;
 # Updates the user based on inputs generated by mailbox_inputs
 sub mailbox_save
 {
-local ($user, $olduser, $in, $new, $dom) = @_;
+my ($user, $olduser, $in, $new, $dom) = @_;
 return undef if (!$dom || !$dom->{$module_name});
 &foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
-local @users = &list_users($dom);
-local $suser;
-local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
-local $oun = &virtual_server::remove_userdom($olduser->{'user'}, $dom);
-local $rv;
+my @users = &list_users($dom);
+my $suser;
+my $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
+my $oun = &virtual_server::remove_userdom($olduser->{'user'}, $dom);
+my $rv;
 
 &lock_file(&passwd_file($dom));
 &lock_file(&conf_file($dom));
@@ -648,7 +653,7 @@ if (!$new) {
 	}
 if ($in->{$input_name} && !$suser) {
 	# Add the user
-	local $newuser = { 'user' => $un,
+	my $newuser = { 'user' => $un,
 			   'enabled' => 1 };
 	&set_user_password($newuser, $user, $dom);
 	&virtual_server::write_as_domain_user($dom,
@@ -686,15 +691,15 @@ elsif ($in->{$input_name} && $suser) {
 &unlock_file(&conf_file($dom));
 
 # Update list of repositories user has access to
-local %canrwreps = map { $_, 1 } split(/\r?\n/, $in->{$input_name."_rwreps"});
-local %canroreps = map { $_, 1 } split(/\r?\n/, $in->{$input_name."_roreps"});
+my %canrwreps = map { $_, 1 } split(/\r?\n/, $in->{$input_name."_rwreps"});
+my %canroreps = map { $_, 1 } split(/\r?\n/, $in->{$input_name."_roreps"});
 if (!$in->{$input_name}) {
 	%canrwreps = ( );
 	%canroreps = ( );
 	}
 foreach my $r (&list_reps($dom)) {
-	local @rusers = &list_rep_users($dom, $r->{'rep'});
-	local ($ruser) = grep { $_->{'user'} eq $oun } @rusers;
+	my @rusers = &list_rep_users($dom, $r->{'rep'});
+	my ($ruser) = grep { $_->{'user'} eq $oun } @rusers;
 	@rusers = grep { $_ ne $ruser } @rusers;
 	if ($canrwreps{$r->{'rep'}}) {
 		push(@rusers, { 'user' => $un,
@@ -716,13 +721,13 @@ return $rv;
 # mailbox_modify(&user, &old, &domain)
 sub mailbox_modify
 {
-local ($user, $olduser, $dom) = @_;
+my ($user, $olduser, $dom) = @_;
 return undef if (!$dom || !$dom->{$module_name});
 &foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
-local @users = &list_users($dom);
-local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
-local $oun = &virtual_server::remove_userdom($olduser->{'user'}, $dom);
-local ($suser) = grep { $_->{'user'} eq $oun } @users;
+my @users = &list_users($dom);
+my $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
+my $oun = &virtual_server::remove_userdom($olduser->{'user'}, $dom);
+my ($suser) = grep { $_->{'user'} eq $oun } @users;
 return undef if (!$suser);
 
 &lock_file(&passwd_file($dom));
@@ -733,8 +738,8 @@ if ($un ne $oun && $suser) {
 	$suser->{'user'} = $un;
 	&htaccess_htpasswd::modify_user($suser);
 	foreach my $r (&list_reps($dom)) {
-		local @rusers = &list_rep_users($dom, $r->{'rep'});
-		local ($ruser) = grep { $_->{'user'} eq $oun } @rusers;
+		my @rusers = &list_rep_users($dom, $r->{'rep'});
+		my ($ruser) = grep { $_->{'user'} eq $oun } @rusers;
 		if ($ruser) {
 			$ruser->{'user'} = $un;
 			&save_rep_users($dom, $r, \@rusers);
@@ -766,26 +771,26 @@ if ($user->{'passmode'} == 3) {
 # Removes any extra features for this user
 sub mailbox_delete
 {
-local ($user, $dom) = @_;
+my ($user, $dom) = @_;
 return undef if (!$dom || !$dom->{$module_name});
 &foreign_require("htaccess-htpasswd", "htaccess-lib.pl");
 
 &lock_file(&passwd_file($dom));
 &lock_file(&conf_file($dom));
 
-local @users = &list_users($dom);
-local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
-local ($suser) = grep { $_->{'user'} eq $un } @users;
+my @users = &list_users($dom);
+my $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
+my ($suser) = grep { $_->{'user'} eq $un } @users;
 if ($suser) {
 	&virtual_server::write_as_domain_user($dom,
 		sub { &htaccess_htpasswd::delete_user($suser) });
 	}
 
 # Remove from all repositories
-foreach $r (&list_reps($dom)) {
-	local @rusers = &list_rep_users($dom, $r->{'rep'});
-	local ($ruser) = grep { $_->{'user'} eq $un } @rusers;
-	local @newrusers = grep { $_ ne $ruser } @rusers;
+foreach my $r (&list_reps($dom)) {
+	my @rusers = &list_rep_users($dom, $r->{'rep'});
+	my ($ruser) = grep { $_->{'user'} eq $un } @rusers;
+	my @newrusers = grep { $_ ne $ruser } @rusers;
 	if (@newrusers != @rusers) {
 		&save_rep_users($dom, $r, \@newrusers);
 		}
@@ -797,6 +802,7 @@ foreach $r (&list_reps($dom)) {
 
 # mailbox_header(&domain)
 # Returns a column header for the user display, or undef for none
+my @column_users; # Sniffy.
 sub mailbox_header
 {
 if ($_[0]->{$module_name}) {
@@ -812,9 +818,9 @@ else {
 # Returns the text to display in the column for some user
 sub mailbox_column
 {
-local ($user, $dom) = @_;
-local $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
-local ($duser) = grep { $_->{'user'} eq $un } @column_users;
+my ($user, $dom) = @_;
+my $un = &virtual_server::remove_userdom($user->{'user'}, $dom);
+my ($duser) = grep { $_->{'user'} eq $un } @column_users;
 return $duser ? $text{'yes'} : $text{'no'};
 }
 
@@ -823,11 +829,11 @@ return $duser ? $text{'yes'} : $text{'no'};
 # users in this virtual server
 sub mailbox_defaults_inputs
 {
-local ($defs, $dom) = @_;
+my ($defs, $dom) = @_;
 if ($dom->{$module_name}) {
-	local %defs;
+	my %defs;
 	&read_file("$module_config_directory/defaults.$dom->{'id'}", \%defs);
-	local @reps = &list_reps($dom);
+	my @reps = &list_reps($dom);
 	return &ui_table_row($text{'mail_svn'},
 		&ui_yesno_radio($input_name, int($defs{'svn'})))."\n".
 	       &ui_table_row($text{'mail_reps'},
@@ -843,9 +849,9 @@ if ($dom->{$module_name}) {
 # file internal to this module to store them
 sub mailbox_defaults_parse
 {
-local ($defs, $dom, $in) = @_;
+my ($defs, $dom, $in) = @_;
 if ($dom->{$module_name}) {
-	local %defs;
+	my %defs;
 	&read_file("$module_config_directory/defaults.$dom->{'id'}", \%defs);
 	$defs{'svn'} = $in->{$input_name};
 	$defs{'reps'} = join(" ", split(/\0/, $in->{$input_name."_reps"}));
@@ -857,8 +863,8 @@ if ($dom->{$module_name}) {
 # Returns HTML for editing per-template options for this plugin
 sub template_input
 {
-local ($tmpl) = @_;
-local $v = $tmpl->{$module_name."limit"};
+my ($tmpl) = @_;
+my $v = $tmpl->{$module_name."limit"};
 $v = "none" if (!defined($v) && $tmpl->{'default'});
 return &ui_table_row($text{'tmpl_limit'},
         &ui_radio($input_name."_mode",
@@ -874,7 +880,7 @@ return &ui_table_row($text{'tmpl_limit'},
 # template_input. All template fields must start with the module name.
 sub template_parse
 {
-local ($tmpl, $in) = @_;
+my ($tmpl, $in) = @_;
 if ($in->{$input_name.'_mode'} == 0) {
         $tmpl->{$module_name."limit"} = "";
         }
@@ -888,4 +894,3 @@ else {
 }
 
 1;
-
