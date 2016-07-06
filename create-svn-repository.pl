@@ -1,4 +1,7 @@
 #!/usr/local/bin/perl
+use strict;
+use warnings;
+our $module_name;
 
 =head1 create-svn-repository.pl
 
@@ -13,9 +16,12 @@ access to the new repository by default with the C<--anonymous> flag.
 
 package virtualmin_svn;
 if (!$module_name) {
+	no warnings "once";
 	$main::no_acl_check++;
+	use warnings "once";
 	$ENV{'WEBMIN_CONFIG'} ||= "/etc/webmin";
 	$ENV{'WEBMIN_VAR'} ||= "/var/webmin";
+	my $pwd;
 	if ($0 =~ /^(.*)\/[^\/]+$/) {
 		chdir($pwd = $1);
 		}
@@ -26,12 +32,13 @@ if (!$module_name) {
 	require './virtualmin-svn-lib.pl';
 	$< == 0 || die "create-svn-repository must be run as root";
 	}
-@OLDARGV = @ARGV;
+my @OLDARGV = @ARGV;
 
 # Parse command-line args
-$type = "fsfs";
+my $type = "fsfs";
+my ($dname, $rname, $anonymous);
 while(@ARGV > 0) {
-	local $a = shift(@ARGV);
+	my $a = shift(@ARGV);
 	if ($a eq "--domain") {
 		$dname = shift(@ARGV);
 		}
@@ -55,16 +62,16 @@ $rname || &usage("Missing --name parameter");
 $rname =~ /^[a-z0-9\.\-\_]+$/i || &usage("Repository name is not valid");
 
 # Get the domain and repos
-$d = &virtual_server::get_domain_by("dom", $dname);
+my $d = &virtual_server::get_domain_by("dom", $dname);
 $d || &usage("No domain named $dname found");
 $d->{'virtualmin-svn'} || &usage("SVN is not enabled for this domain");
-@reps = &list_reps($d);
-($clash) = grep { $_->{'rep'} eq $rname } @reps;
+my @reps = &list_reps($d);
+my ($clash) = grep { $_->{'rep'} eq $rname } @reps;
 $clash && &usage("A repository with the same name already exists");
 
 # Create it
-$rep = { 'rep' => $rname };
-$err = &create_rep($d, $rep, $type);
+my $rep = { 'rep' => $rname };
+my $err = &create_rep($d, $rep, $type);
 if ($err) {
 	print "Failed to create SVN repository : $err\n";
 	exit(1);
@@ -72,7 +79,7 @@ if ($err) {
 
 # Add the anonymous user
 if ($anonymous) {
-	@repousers = &list_rep_users($d, $rep);
+	my @repousers = &list_rep_users($d, $rep);
 	push(@repousers, { 'user' => '*', 'perms' => 'r' });
 	&save_rep_users($d, $rep, \@repousers);
 	}
@@ -91,4 +98,3 @@ print "                                [--bdb]\n";
 print "                                [--anonymous]\n";
 exit(1);
 }
-

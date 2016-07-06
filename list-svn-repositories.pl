@@ -1,4 +1,7 @@
 #!/usr/local/bin/perl
+use strict;
+use warnings;
+our $module_name;
 
 =head1 list-svn-repositories.pl
 
@@ -12,8 +15,11 @@ repository names with the C<--name-only> flag.
 =cut
 
 package virtualmin_svn;
+my $pwd;
 if (!$module_name) {
+	no warnings "once";
 	$main::no_acl_check++;
+	use warnings "once";
 	$ENV{'WEBMIN_CONFIG'} ||= "/etc/webmin";
 	$ENV{'WEBMIN_VAR'} ||= "/var/webmin";
         if ($0 =~ /^(.*)\/[^\/]+$/) {
@@ -28,8 +34,9 @@ if (!$module_name) {
 	}
 
 # Parse command-line args
+my ($multi, $nameonly, $dname);
 while(@ARGV > 0) {
-	local $a = shift(@ARGV);
+	my $a = shift(@ARGV);
 	if ($a eq "--multiline") {
 		$multi = 1;
 		}
@@ -46,10 +53,10 @@ while(@ARGV > 0) {
 
 # Get the domain and repos
 $dname || &usage("Missing --domain parameter");
-$d = &virtual_server::get_domain_by("dom", $dname);
+my $d = &virtual_server::get_domain_by("dom", $dname);
 $d || &usage("No domain named $dname found");
 $d->{'virtualmin-svn'} || &usage("SVN is not enabled for this domain");
-@reps = &list_reps($d);
+my @reps = &list_reps($d);
 
 if ($nameonly) {
 	# Output only repo names
@@ -69,7 +76,7 @@ elsif ($multi) {
 	}
 else {
 	# Output table
-	$fmt = "%-20.20s %-58.58s\n";
+	my $fmt = "%-20.20s %-58.58s\n";
 	printf $fmt, "Repository", "Directory";
 	printf $fmt, ("-" x 20), ("-" x 58);
 	foreach my $r (@reps) {
@@ -86,4 +93,3 @@ print "virtualmin list-svn-repositories [--multiline | --name-only]\n";
 print "                                  --domain name\n";
 exit(1);
 }
-

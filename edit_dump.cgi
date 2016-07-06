@@ -1,5 +1,8 @@
 #!/usr/local/bin/perl
 # Show a form for dumping a repository
+use strict;
+use warnings;
+our (%text, %in, %config);
 
 require './virtualmin-svn-lib.pl';
 &ReadParse();
@@ -7,10 +10,10 @@ require './virtualmin-svn-lib.pl';
 $config{'candump'} || &error($text{'dump_ecannot'});
 
 # Get the domain and repository
-$dom = &virtual_server::get_domain($in{'dom'});
+my $dom = &virtual_server::get_domain($in{'dom'});
 &can_edit_domain($dom) || &error($text{'add_edom'});
-@reps = &list_reps($dom);
-($rep) = grep { $_->{'rep'} eq $in{'rep'} } @reps;
+my @reps = &list_reps($dom);
+my ($rep) = grep { $_->{'rep'} eq $in{'rep'} } @reps;
 $rep || &error($text{'delete_erep'});
 
 &ui_print_header(&virtual_server::domain_in($dom), $text{'dump_title'}, "");
@@ -36,4 +39,3 @@ print &ui_table_end();
 print &ui_form_end([ [ undef, $text{'dump_ok'} ] ]);
 
 &ui_print_footer("index.cgi?show=$in{'show'}", $text{'index_return'});
-

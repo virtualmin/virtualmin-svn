@@ -1,19 +1,22 @@
 #!/usr/local/bin/perl
 # Delete one repository
+use strict;
+use warnings;
+our (%text, %in);
 
 require './virtualmin-svn-lib.pl';
 &ReadParse();
 
 # Get the domain and repository
-($repdom) = grep { $_ ne "confirm" && $_ ne "show" } (keys %in);
-($repname, $id) = split(/\@/, $repdom);
-$dom = &virtual_server::get_domain($id);
+my ($repdom) = grep { $_ ne "confirm" && $_ ne "show" } (keys %in);
+my ($repname, $id) = split(/\@/, $repdom);
+my $dom = &virtual_server::get_domain($id);
 &can_edit_domain($dom) || &error($text{'add_edom'});
-@reps = &list_reps($dom);
-($rep) = grep { $_->{'rep'} eq $repname } @reps;
+my @reps = &list_reps($dom);
+my ($rep) = grep { $_->{'rep'} eq $repname } @reps;
 $rep || &error($text{'delete_erep'});
 
-$button = $in{$repdom};
+my $button = $in{$repdom};
 if ($button eq &entities_to_ascii($text{'delete'})) {
 	# Deleting repositories
 	if ($in{'confirm'}) {
@@ -29,7 +32,7 @@ if ($button eq &entities_to_ascii($text{'delete'})) {
 				 $text{'delete_title'}, "");
 
 		print "<center>\n";
-		$size = &disk_usage_kb("$dom->{'home'}/svn/$rep->{'rep'}");
+		my $size = &disk_usage_kb("$dom->{'home'}/svn/$rep->{'rep'}");
 		print &ui_form_start("delete.cgi");
 		print &ui_hidden($repdom, $in{$repdom});
 		print &ui_hidden("show", $in{'show'});
@@ -58,7 +61,7 @@ elsif ($button eq &entities_to_ascii($text{'index_perms'})) {
 	# Set permissions back to Apache user
 	&ui_print_header(&virtual_server::domain_in($dom),
 			 $text{'perms_title'}, "");
-	
+
 	print &text('perms_doing', "<tt>$rep->{'dir'}</tt>"),"<br>\n";
 	&set_rep_permissions($dom, $rep);
 	print $text{'perms_done'},"<p>\n";
@@ -73,4 +76,3 @@ elsif ($button eq &entities_to_ascii($text{'index_anon'})) {
 else {
 	&error($text{'delete_emode'});
 	}
-

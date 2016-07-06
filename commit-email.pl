@@ -40,6 +40,7 @@ BEGIN {
 }
 
 use strict;
+use warnings;
 use Carp;
 use POSIX qw(strftime);
 my ($sendmail, $smtp_server);
@@ -468,9 +469,9 @@ elsif ($mode eq 'revprop-change')
     # Get the diff file if it was provided, otherwise the property value.
     if ($diff_file)
       {
-        open(DIFF_FILE, $diff_file) or die "$0: cannot read `$diff_file': $!\n";
-        @svnlines = <DIFF_FILE>;
-        close DIFF_FILE;
+        open(my $DIFF_FILE, "<", $diff_file) or die "$0: cannot read `$diff_file': $!\n";
+        @svnlines = <$DIFF_FILE>;
+        close $DIFF_FILE;
       }
     else
       {
@@ -612,11 +613,11 @@ foreach my $project (@project_settings_list)
       {
         # Open a pipe to sendmail.
         my $command = "$sendmail -f'$mail_from' $userlist";
-        if (open(SENDMAIL, "| $command"))
+        if (open(my $SENDMAIL, ">", "| $command"))
           {
-            print SENDMAIL @head, @body;
-            print SENDMAIL @difflines if $diff_wanted;
-            close SENDMAIL
+            print $SENDMAIL @head, @body;
+            print $SENDMAIL @difflines if $diff_wanted;
+            close $SENDMAIL
               or warn "$0: error in closing `$command' for writing: $!\n";
           }
         else
@@ -642,11 +643,11 @@ foreach my $project (@project_settings_list)
     # Dump the output to logfile (if its name is not empty).
     if ($log_file =~ /\w/)
       {
-        if (open(LOGFILE, ">> $log_file"))
+        if (open(my $LOGFILE, ">>", "$log_file"))
           {
-            print LOGFILE @head, @body;
-            print LOGFILE @difflines if $diff_wanted;
-            close LOGFILE
+            print $LOGFILE @head, @body;
+            print $LOGFILE @difflines if $diff_wanted;
+            close $LOGFILE
               or warn "$0: error in closing `$log_file' for appending: $!\n";
           }
         else
@@ -744,10 +745,11 @@ sub safe_read_from_pipe
       croak "$0: safe_read_from_pipe passed no arguments.\n";
     }
 
-  my $openfork_available = $^O ne "MSWin32"; 
+  my $openfork_available = $^O ne "MSWin32";
+  my $SAFE_READ;
   if ($openfork_available) # We can fork on this system.
     {
-      my $pid = open(SAFE_READ, '-|');
+      my $pid = open($SAFE_READ, "<", '-|');
       unless (defined $pid)
         {
           die "$0: cannot fork: $!\n";
@@ -760,29 +762,29 @@ sub safe_read_from_pipe
             or die "$0: cannot exec `@_': $!\n";
         }
     }
-  else  # Running on Windows.  No fork. 
+  else  # Running on Windows.  No fork.
     {
       my @commandline = ();
       my $arg;
-      
+
       while ($arg = shift)
         {
           $arg =~ s/\"/\\\"/g;
           if ($arg eq "" or $arg =~ /\s/) { $arg = "\"$arg\""; }
           push(@commandline, $arg);
         }
-        
+
       # Now do the pipe.
-      open(SAFE_READ, "@commandline |")
+      open($SAFE_READ, "<", "@commandline |")
         or die "$0: cannot pipe to command: $!\n";
     }
   my @output;
-  while (<SAFE_READ>)
+  while (<$SAFE_READ>)
     {
       s/[\r\n]+$//;
       push(@output, $_);
     }
-  close(SAFE_READ);
+  close($SAFE_READ);
   my $result = $?;
   my $exit   = $result >> 8;
   my $signal = $result & 127;
