@@ -48,7 +48,6 @@ if ($err) {
 	print &text('load_failed', $err),"<p>\n";
 	}
 else {
-	my @st = stat($in{'file'});
 	print $text{'load_done'},"<p>\n";
 	&webmin_log("load", "repo", $in{'rep'}, { 'dom' => $dom->{'dom'} });
 	}
