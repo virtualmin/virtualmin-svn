@@ -117,20 +117,22 @@ else {
 	# Create password and configuration files
 	if (!-r $passwd_file) {
 		&lock_file($passwd_file);
+		my $fh = "PASSWD";
 		&virtual_server::open_tempfile_as_domain_user(
-			$_[0], PASSWD, ">$passwd_file", 0, 1);
+			$_[0], $fh, ">$passwd_file", 0, 1);
 		&virtual_server::close_tempfile_as_domain_user(
-			$_[0], PASSWD);
+			$_[0], $fh);
 		&virtual_server::set_permissions_as_domain_user(
 			$_[0], 0755, $passwd_file);
 		&unlock_file($passwd_file);
 		}
 	if (!-r $conf_file) {
 		&lock_file($conf_file);
+		my $fh = "PASSWD";
 		&virtual_server::open_tempfile_as_domain_user(
-			$_[0], PASSWD, ">$conf_file", 0, 1);
+			$_[0], $fh, ">$conf_file", 0, 1);
 		&virtual_server::close_tempfile_as_domain_user(
-			$_[0], PASSWD);
+			$_[0], $fh);
 		&virtual_server::set_permissions_as_domain_user(
 			$_[0], 0755, $conf_file);
 		&unlock_file($conf_file);
