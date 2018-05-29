@@ -674,7 +674,7 @@ elsif (!$in->{$input_name} && $suser) {
 elsif ($in->{$input_name} && $suser) {
 	# Update the user
 	$suser->{'user'} = $un;
-	if ($user->{'passmode'} == 3) {
+	if ($user->{'passmode'} && $user->{'passmode'} == 3) {
 		if ($config{'auth'} eq 'Digest') {
 			$suser->{'pass'} = $user->{'pass_digest'} ||
 			    &htaccess_htpasswd::digest_password(
