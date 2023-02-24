@@ -1,63 +1,51 @@
-feat_name=AltVersiyon havuzlar&#305;
-feat_losing=Web sitesi �zerinden AltVersiyon eri&#351;imi engellenecek
-feat_disname=altversiyon havuzlar&#305;
-feat_label=AltVersiyon havuzlar&#305;na izin verilsin mi?
-feat_edepweb=Bir web sitesi etkinle&#351;tirilmeden AltVersiyon etkinle&#351;tirilemez
-feat_echeck=AltVersiyon y�netim komutu $1 kurulmam&#305;&#351;
-feat_backup=AltVersiyon havuz ve konfig�rasyon dosyalar&#305; yedekleniyor ..
-feat_tar=.. havuzlar&#305;n TAR up i&#351;lemi yap&#305;lamad&#305; : $1
-feat_nopfile=.. kullan&#305;c&#305; dosyas&#305; bulunamad&#305;!
-feat_nocfile=.. konfig�rasyon dosyas&#305; bulunamad&#305;!
-feat_backup_name=AltVersiyon havuz ve konfig�rasyon dosyalar&#305;
+feat_name=AltVersiyon havuzları
+feat_losing=Web sitesi üzerinden AltVersiyon erişimi engellenecek
+feat_disname=altversiyon havuzları
+feat_label=AltVersiyon havuzlarına izin verilsin mi?
+feat_edepweb=Bir web sitesi etkinleştirilmeden AltVersiyon etkinleştirilemez
+feat_echeck=AltVersiyon yönetim komutu $1 kurulmamış
+feat_backup=AltVersiyon havuz ve konfigürasyon dosyaları yedekleniyor ..
+feat_tar=.. havuzların TAR up işlemi yapılamadı : $1
+feat_nopfile=.. kullanıcı dosyası bulunamadı!
+feat_nocfile=.. konfigürasyon dosyası bulunamadı!
+feat_backup_name=AltVersiyon havuz ve konfigürasyon dosyaları
 feat_untar=.. havuzlar un-TAR edilemedi : $1
-feat_copypfile=.. kullan&#305;c&#305; dosyas&#305; kopyalanmad&#305;
-feat_copycfile=.. Konfig�rasyon dosyas&#305; kopyalanamad&#305;
-feat_restore=AltVersiyon havuz ve konfig�rasyon dosyalar&#305; geri y�kleniyor ..
-feat_evalidatefile=SVN kullan&#305;c&#305; dosyas&#305; $1 mevcut de&#287;il
-feat_evalidateconf=SVN konfig�rasyon dosyas&#305; $1 mevcut de&#287;il
-feat_evalidateloc=Apache konfig�rasyonundaki SVN yeri eksik
-
-setup_dav=Web sitesi konfig�rasyonuna AltVersiyon direktifleri ekleniyor ..
-
-save_dav=Web sitesi konfig�rasyonundaki alanad&#305; g�ncelleniyor ..
-
-delete_dav=Web sitesi konfig�rasyonundan AltVersiyon direketifleri kald&#305;r&#305;l&#305;yor ..
-
-index_title=AltVersiyon Havuzlar&#305;
-index_none=Sunucuular&#305;n&#305;zda hi�bir AltVersiyon hen�z tan&#305;mlanmam&#305;&#351;.
+feat_restore=AltVersiyon havuz ve konfigürasyon dosyaları geri yükleniyor ..
+feat_evalidatefile=SVN kullanıcı dosyası $1 mevcut değil
+feat_evalidateconf=SVN konfigürasyon dosyası $1 mevcut değil
+feat_evalidateloc=Apache konfigürasyonundaki SVN yeri eksik
+setup_dav=Web sitesi konfigürasyonuna AltVersiyon direktifleri ekleniyor ..
+save_dav=Web sitesi konfigürasyonundaki alanadı güncelleniyor ..
+delete_dav=Web sitesi konfigürasyonundan AltVersiyon direketifleri kaldırılıyor ..
+index_title=AltVersiyon Havuzları
+index_none=Sunucuularınızda hiçbir AltVersiyon henüz tanımlanmamış.
 index_rep=Havuz ismi
-index_dom=Alt&#305;nda oldu&#287;u sunucu
-index_dir=Klas�r
-index_action=&#304;&#351;lem
-index_header=AltVersiyon Havuzu Olu&#351;tur
-index_edoms=Vitualmin sunucular&#305;na eri&#351;im hakk&#305;n&#305;z yok.
-index_edoms2=Hen�z hi�bir Virtualmin sunucusu olu&#351;turulmam&#305;&#351;.
-index_edoms3=Eri&#351;im hakk&#305;n&#305;z olan hi�bir Virtualmin sunucusunda AltVersiyon �zelli&#287;i etkinle&#351;tirilmemi&#351;.
-index_eplugin=Virtualmin'in <a href='$1'>pluginler sayfas&#305;nda</a> AltVersiyon plugini etkinle&#351;tirilmemi&#351;. Bu mod�l� kullanabilmeniz i�n �nceden se�ilmesi laz&#305;m.
-index_eplugin2=Virtualmin'de AltVersiyon plugini etkinle&#351;tirilmemi&#351;.
+index_dom=Altında olduğu sunucu
+index_dir=Klasör
+index_action=İşlem
+index_header=AltVersiyon Havuzu Oluştur
+index_edoms=Vitualmin sunucularına erişim hakkınız yok.
+index_edoms2=Henüz hiçbir Virtualmin sunucusu oluşturulmamış.
+index_edoms3=Erişim hakkınız olan hiçbir Virtualmin sunucusunda AltVersiyon özelliği etkinleştirilmemiş.
+index_eplugin=Virtualmin'in <a href='$1'>pluginler sayfasında</a> AltVersiyon plugini etkinleştirilmemiş. Bu modülü kullanabilmeniz içn önceden seçilmesi lazım.
+index_eplugin2=Virtualmin'de AltVersiyon plugini etkinleştirilmemiş.
 index_type=Havuz tipi
-index_ro=Anonim okuma eri&#351;imine izin verilsin mi?
+index_ro=Anonim okuma erişimine izin verilsin mi?
 index_max=Bundan daha fazla SVN havuzu ekleme izniniz yok.
-index_canadd0=Limitlerinize g�re $1 adek ek havuz eklenebilir.
-
-add_err=Havuz olu&#351;turulamad&#305;
-add_erep=Eksik veya ge�ersiz havuz ismi
-add_edom=Bu alanad&#305;na eri&#351;im hakk&#305;n&#305;z yok
-
-mail_svn=AltVersiyon logini etkinle&#351;tirilsin mi?
-mail_reps=Havuzlara eri&#351;ime izin ver
+index_canadd0=Limitlerinize göre $1 adek ek havuz eklenebilir.
+add_err=Havuz oluşturulamadı
+add_erep=Eksik veya geçersiz havuz ismi
+add_edom=Bu alanadına erişim hakkınız yok
+mail_svn=AltVersiyon logini etkinleştirilsin mi?
+mail_reps=Havuzlara erişime izin ver
 mail_header=SVN?
-mail_clash=Ayn&#305; isimle bir AltVersiyon kullan&#305;c&#305;s&#305; zaten mevcut
-mail_pass=Bir kullan&#305;c&#305; i�in SVN etkinle&#351;tirilirken bir &#351;ifre girilmeli
-
-delete_erep=Havuz mevcut de&#287;il
-
-links_link=SVN Havuzlar&#305;n&#305; D�zenle
-
-limits_max=Maksimum SVN havuzu say&#305;s&#305;
-limits_emax=Eksik veya ge�ersiz maksimum SVN havuzu say&#305;s&#305;
-
-tmpl_limit=Varsay&#305;lan SVN havuz say&#305;s&#305; limiti
-tmpl_unlimit=S&#305;n&#305;rs&#305;z
+mail_clash=Aynı isimle bir AltVersiyon kullanıcısı zaten mevcut
+mail_pass=Bir kullanıcı için SVN etkinleştirilirken bir şifre girilmeli
+delete_erep=Havuz mevcut değil
+links_link=SVN Havuzlarını Düzenle
+limits_max=Maksimum SVN havuzu sayısı
+limits_emax=Eksik veya geçersiz maksimum SVN havuzu sayısı
+tmpl_limit=Varsayılan SVN havuz sayısı limiti
+tmpl_unlimit=Sınırsız
 tmpl_atmost=En fazla
-tmpl_elimit=Eksik veya ge�ersiz SVN havuz say&#305;s&#305; limiti
+tmpl_elimit=Eksik veya geçersiz SVN havuz sayısı limiti
