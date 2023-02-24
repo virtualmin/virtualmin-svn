@@ -792,9 +792,11 @@ if ($suser) {
 foreach my $r (&list_reps($dom)) {
 	my @rusers = &list_rep_users($dom, $r->{'rep'});
 	my ($ruser) = grep { $_->{'user'} eq $un } @rusers;
-	my @newrusers = grep { $_ ne $ruser } @rusers;
-	if (@newrusers != @rusers) {
-		&save_rep_users($dom, $r, \@newrusers);
+	if ($ruser) {
+		my @newrusers = grep { $_ ne $ruser } @rusers;
+		if (@newrusers != @rusers) {
+			&save_rep_users($dom, $r, \@newrusers);
+			}
 		}
 	}
 
